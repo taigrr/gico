@@ -17,7 +17,7 @@ func main() {
 	for i := 0; i < 366; i++ {
 		freq = append(freq, rand.Int())
 	}
-	svg := graph.GetImage(freq)
+	svg := graph.GetYearImage(freq)
 	f, err := os.Create("out.svg")
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)

@@ -26,12 +26,11 @@ func CreateGraph() bytes.Buffer {
 
 func init() {
 	colors := []string{"#767960", "#a7297f", "#e8ca89", "#f5efd6", "#858966"}
+	colors = []string{"#161b22", "#0e4429", "#006d32", "#26a641", "#39d353"}
 	for _, c := range colors {
 		color := sc.FromHexString(c)
-		_ = c
 		colorScheme = append(colorScheme, color)
 	}
-
 }
 
 func SetColorScheme(c []color.Color) {
@@ -52,13 +51,45 @@ func ColorForFrequency(freq, min, max int) sc.SimpleColor {
 	}
 	return colorScheme[colorIndex]
 }
-func GetImage(frequencies []int) bytes.Buffer {
+func GetYearImage(frequencies []int) bytes.Buffer {
 	squareColors := []sc.SimpleColor{}
 	min, max := minmax(frequencies)
 	for _, f := range frequencies {
 		squareColors = append(squareColors, ColorForFrequency(f, min, max))
 	}
-	return drawImage(squareColors)
+	return drawYearImage(squareColors)
+}
+
+func drawYearImage(c []sc.SimpleColor) bytes.Buffer {
+	//TODO here, draw suqares in appropriate colors, hopefully as an svg
+	var sb bytes.Buffer
+	sbw := bufio.NewWriter(&sb)
+	squareLength := 10
+	width := (len(c)/7+1)*squareLength*2 + squareLength*5
+	height := squareLength*9 + squareLength*3
+	canvas := svg.New(sbw)
+	canvas.Start(width, height)
+	for i, s := range c {
+		canvas.Square(2*squareLength+width/(len(c)/7+1)*(i/7)+squareLength*2, squareLength/2+height/7*(i%7), squareLength, fmt.Sprintf("fill:%s", s.HexString()))
+	}
+	canvas.Text(2*squareLength, squareLength*3, "Mon", fmt.Sprintf("text-anchor:middle;font-size:%dpx;fill:black", squareLength))
+	canvas.Text(2*squareLength, int(float64(squareLength)*6.5), "Wed", fmt.Sprintf("text-anchor:middle;font-size:%dpx;fill:black", squareLength))
+	canvas.Text(2*squareLength, int(float64(squareLength))*10, "Fri", fmt.Sprintf("text-anchor:middle;font-size:%dpx;fill:black", squareLength))
+	canvas.End()
+	sbw.Flush()
+	return sb
+}
+
+func minmax(f []int) (int, int) {
+	min, max := 0, 0
+	for _, x := range f {
+		if x < min {
+			min = x
+		} else if x > max {
+			max = x
+		}
+	}
+	return min, max
 }
 
 func svgToPng() {
@@ -85,34 +116,4 @@ func svgToPng() {
 	if err != nil {
 		panic(err)
 	}
-}
-
-func drawImage(c []sc.SimpleColor) bytes.Buffer {
-	//TODO here, draw suqares in appropriate colors, hopefully as an svg
-	var sb bytes.Buffer
-	sbw := bufio.NewWriter(&sb)
-	width := 717
-	height := 112
-	squareLength := 10
-	canvas := svg.New(sbw)
-	canvas.Start(width, height)
-	for i, c := range c {
-		canvas.Square(10+squareLength+width/52*(i/7), squareLength/2+height/7*(i%7), squareLength, fmt.Sprintf("fill:%s", c.HexString()))
-	}
-	canvas.Text(width/100, squareLength*2+10, "Mon", "text-anchor:middle;font-size:10px;fill:black")
-	canvas.End()
-	sbw.Flush()
-	return sb
-}
-
-func minmax(f []int) (int, int) {
-	min, max := 0, 0
-	for _, x := range f {
-		if x < min {
-			min = x
-		} else if x > max {
-			max = x
-		}
-	}
-	return min, max
 }
