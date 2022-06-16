@@ -40,7 +40,7 @@ func SetColorScheme(c []color.Color) {
 	}
 }
 
-func ColorForFrequency(freq, min, max int) color.Color {
+func ColorForFrequency(freq, min, max int) sc.SimpleColor {
 	spread := max - min
 	interval := float64(spread) / float64(len(colorScheme))
 	colorIndex := 0
@@ -53,7 +53,7 @@ func ColorForFrequency(freq, min, max int) color.Color {
 	return colorScheme[colorIndex]
 }
 func GetImage(frequencies []int) bytes.Buffer {
-	squareColors := []color.Color{}
+	squareColors := []sc.SimpleColor{}
 	min, max := minmax(frequencies)
 	for _, f := range frequencies {
 		squareColors = append(squareColors, ColorForFrequency(f, min, max))
@@ -91,13 +91,15 @@ func drawImage(c []sc.SimpleColor) bytes.Buffer {
 	//TODO here, draw suqares in appropriate colors, hopefully as an svg
 	var sb bytes.Buffer
 	sbw := bufio.NewWriter(&sb)
-	width := 500
-	height := 500
+	width := 717
+	height := 112
+	squareLength := 10
 	canvas := svg.New(sbw)
 	canvas.Start(width, height)
-	canvas.Square(width/20, height/300, width/10, fmt.Sprintf("fill:%s", colorScheme[0].HexString()))
-	canvas.Circle(width/2, height/2, 100)
-	canvas.Text(width/2, height/2, "Hello, SVG", "text-anchor:middle;font-size:30px;fill:white")
+	for i, c := range c {
+		canvas.Square(10+squareLength+width/52*(i/7), squareLength/2+height/7*(i%7), squareLength, fmt.Sprintf("fill:%s", c.HexString()))
+	}
+	canvas.Text(width/100, squareLength*2+10, "Mon", "text-anchor:middle;font-size:10px;fill:black")
 	canvas.End()
 	sbw.Flush()
 	return sb

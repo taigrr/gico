@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
+	"time"
 
 	"github.com/taigrr/gitgraph/graph"
 )
@@ -10,7 +12,12 @@ import (
 type DayCount [366]int
 
 func main() {
-	svg := graph.GetImage([]int{1, 2, 5, 6, 5, 4, 5, 8, 7, 43, 2, 3})
+	freq := []int{}
+	rand.Seed(time.Now().UnixMilli())
+	for i := 0; i < 366; i++ {
+		freq = append(freq, rand.Int())
+	}
+	svg := graph.GetImage(freq)
 	f, err := os.Create("out.svg")
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
