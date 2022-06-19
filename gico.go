@@ -1,18 +1,15 @@
-package main
+package gico
 
 import (
 	"flag"
 	"fmt"
 	"os"
 	"time"
+
+	"github.com/taigrr/gico/ui"
 )
 
 type Month string
-
-var months = []Month{"Jan", "Feb", "Mar",
-	"Apr", "May", "Jun",
-	"Jul", "Aug", "Sep",
-	"Oct", "Nov", "Dec"}
 
 var days [366]int
 
@@ -34,7 +31,7 @@ func main() {
 	case "graph":
 		printGraph()
 	case "interactive":
-		interactiveGraph()
+		ui.InteractiveGraph()
 	case "loadRepo":
 		loadRepo()
 	default:
@@ -43,10 +40,12 @@ func main() {
 }
 
 type Commit struct {
-	LOC       int       `json:"loc"`
-	Message   string    `json:"message"`
-	TimeStamp time.Time `json:"ts"`
-	Author    string    `json:"author"`
+	LOC       int       `json:"loc,omitempty"`
+	Message   string    `json:"message,omitempty"`
+	TimeStamp time.Time `json:"ts,omitempty"`
+	Author    string    `json:"author,omitempty"`
+	Repo      string    `json:"repo,omitempty"`
+	Path      string    `json:"path,omitempty"`
 }
 
 type DataSet map[time.Time]WorkDay
@@ -54,8 +53,14 @@ type DataSet map[time.Time]WorkDay
 type WorkDay struct {
 	Day     time.Time `json:"day"`
 	Count   int       `json:"count"`
-	Message string    `json:"message,omitempty"`
 	Commits []Commit  `json:"commits,omitempty"`
+}
+
+func NewCommit(Author, Message, Repo, Path string, LOC int) Commit {
+	ci := Commit{Message: Message,
+		Author: Author, LOC: LOC, TimeStamp: time.Now(),
+		Repo: Repo, Path: Path}
+	return ci
 }
 
 func loadRepo() {
@@ -64,7 +69,6 @@ func loadRepo() {
 
 func readCommitDB() DataSet {
 	ds := DataSet{}
-	ds = append(ds,
 	return ds
 }
 func printHelp() {
@@ -73,7 +77,7 @@ func printHelp() {
 
 func increment() {
 	commits := readCommitDB()
-	
+	// crea
 	fmt.Printf("%v\n", commits)
 }
 
