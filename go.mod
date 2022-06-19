@@ -6,6 +6,7 @@ replace github.com/taigrr/go-colorpallettes => ../go-colorpallettes
 
 require (
 	github.com/ajstarks/svgo v0.0.0-20211024235047-1546f124cd8b
+	github.com/gorilla/mux v1.8.0
 	github.com/srwiley/oksvg v0.0.0-20220128195007-1f435e4c2b44
 	github.com/srwiley/rasterx v0.0.0-20220615024203-67b7089efd25
 	github.com/taigrr/go-colorpallettes v0.0.0-00010101000000-000000000000

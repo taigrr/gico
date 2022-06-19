@@ -26,7 +26,7 @@ func CreateGraph() bytes.Buffer {
 
 func init() {
 	colors := []string{"#767960", "#a7297f", "#e8ca89", "#f5efd6", "#858966"}
-	colors = []string{"#161b22", "#0e4429", "#006d32", "#26a641", "#39d353"}
+	// colors = []string{"#000000", "#0e4429", "#006d32", "#26a641", "#39d353"}
 	for _, c := range colors {
 		color := sc.FromHexString(c)
 		colorScheme = append(colorScheme, color)
@@ -50,6 +50,31 @@ func ColorForFrequency(freq, min, max int) sc.SimpleColor {
 		colorIndex = len(colorScheme) - 1
 	}
 	return colorScheme[colorIndex]
+}
+func GetWeekImage(frequencies []int) bytes.Buffer {
+	squareColors := []sc.SimpleColor{}
+	min, max := minmax(frequencies)
+	for _, f := range frequencies {
+		squareColors = append(squareColors, ColorForFrequency(f, min, max))
+	}
+	return drawWeekImage(squareColors)
+}
+
+func drawWeekImage(c []sc.SimpleColor) bytes.Buffer {
+	var sb bytes.Buffer
+	sbw := bufio.NewWriter(&sb)
+	squareLength := 10
+	width := (len(c) + 1) * squareLength * 2
+	height := squareLength * 2
+	canvas := svg.New(sbw)
+	canvas.Start(width, height)
+	canvas.Rect(0, 0, width, height, "fill:black")
+	for i, s := range c {
+		canvas.Square(squareLength*2*(i+1), squareLength/2, squareLength, fmt.Sprintf("fill:%s", s.HexString()))
+	}
+	canvas.End()
+	sbw.Flush()
+	return sb
 }
 func GetYearImage(frequencies []int) bytes.Buffer {
 	squareColors := []sc.SimpleColor{}
