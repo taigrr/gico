@@ -22,7 +22,7 @@ func main() {
 			freq = append(freq, rand.Int())
 		}
 		w.Header().Add("Content-Type", "text/html")
-		svg := graph.GetWeekImage(freq)
+		svg := graph.GetWeekSVG(freq)
 		svg.WriteTo(w)
 
 	})
@@ -31,7 +31,7 @@ func main() {
 		for i := 0; i < 365; i++ {
 			freq = append(freq, rand.Int())
 		}
-		svg := graph.GetYearImage(freq)
+		svg := graph.GetYearSVG(freq)
 		w.Header().Add("Content-Type", "text/html")
 		svg.WriteTo(w)
 

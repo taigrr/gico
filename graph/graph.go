@@ -51,7 +51,7 @@ func ColorForFrequency(freq, min, max int) sc.SimpleColor {
 	}
 	return colorScheme[colorIndex]
 }
-func GetWeekImage(frequencies []int) bytes.Buffer {
+func GetWeekSVG(frequencies []int) bytes.Buffer {
 	squareColors := []sc.SimpleColor{}
 	min, max := minmax(frequencies)
 	for _, f := range frequencies {
@@ -76,7 +76,7 @@ func drawWeekImage(c []sc.SimpleColor) bytes.Buffer {
 	sbw.Flush()
 	return sb
 }
-func GetYearImage(frequencies []int) bytes.Buffer {
+func GetYearSVG(frequencies []int) bytes.Buffer {
 	squareColors := []sc.SimpleColor{}
 	min, max := minmax(frequencies)
 	for _, f := range frequencies {
