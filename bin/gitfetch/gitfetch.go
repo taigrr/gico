@@ -11,8 +11,6 @@ import (
 	gterm "github.com/taigrr/gitgraph/term"
 )
 
-type DataSet map[time.Time]gico.WorkDay
-
 func main() {
 
 	r, err := git.PlainOpenWithOptions(".", &(git.PlainOpenOptions{DetectDotGit: true}))
@@ -26,7 +24,7 @@ func main() {
 	//	year := time.Now().Year()
 	//	yearStart := time.Time{}
 	//	yearStart.AddDate(year, 0, 0)
-	data := make(DataSet)
+	data := gico.NewDataSet()
 	err = cIter.ForEach(func(c *object.Commit) error {
 		ts := c.Author.When
 		commit := gico.Commit{Author: c.Author.Name, Message: c.Message, TimeStamp: ts}

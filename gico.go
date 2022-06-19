@@ -50,6 +50,10 @@ type Commit struct {
 
 type DataSet map[time.Time]WorkDay
 
+func NewDataSet() DataSet {
+	return make(DataSet)
+}
+
 type WorkDay struct {
 	Day     time.Time `json:"day"`
 	Count   int       `json:"count"`
