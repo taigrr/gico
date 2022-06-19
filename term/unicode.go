@@ -1,3 +1,3 @@
-package main
+package term
 
 const block = "▅"

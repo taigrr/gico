@@ -1,2 +1,4 @@
 *.svg
 gitgraph
+bin/cli/cli
+bin/server/svg-server
