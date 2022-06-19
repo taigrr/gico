@@ -2,16 +2,21 @@ module github.com/taigrr/gico
 
 go 1.18
 
+replace github.com/taigrr/go-colorpallettes => ../go-colorpallettes
+
 replace github.com/charmbracelet/bubbles => github.com/taigrr/bubbles v0.10.5
 
 replace github.com/muesli/termenv => github.com/taigrr/termenv v0.11.2
 
 replace github.com/charmbracelet/lipgloss => github.com/taigrr/lipgloss v0.5.1
 
+replace github.com/taigrr/gitgraph => ../gitgraph
+
 require (
 	github.com/charmbracelet/bubbletea v0.20.0
 	github.com/charmbracelet/lipgloss v0.5.0
 	github.com/go-git/go-git/v5 v5.4.2
+	github.com/taigrr/gitgraph v0.0.0-00010101000000-000000000000
 )
 
 require (
@@ -31,13 +36,14 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/muesli/ansi v0.0.0-20211031195517-c9f0611b6c70 // indirect
 	github.com/muesli/reflow v0.3.0 // indirect
-	github.com/muesli/termenv v0.11.1-0.20220212125758-44cd13922739 // indirect
+	github.com/muesli/termenv v0.11.1 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
+	github.com/taigrr/go-colorpallettes v0.0.0-00010101000000-000000000000 // indirect
 	github.com/xanzy/ssh-agent v0.3.0 // indirect
 	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b // indirect
-	golang.org/x/net v0.0.0-20210326060303-6b1517762897 // indirect
+	golang.org/x/net v0.0.0-20211118161319-6a13c67c3ce4 // indirect
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
-	golang.org/x/term v0.0.0-20220411215600-e5f449aeb171 // indirect
+	golang.org/x/term v0.0.0-20210422114643-f5beecf764ed // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )
