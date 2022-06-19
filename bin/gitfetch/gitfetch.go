@@ -21,9 +21,7 @@ func main() {
 	ref, err := r.Head()
 	cIter, err := r.Log(&git.LogOptions{From: ref.Hash()})
 
-	//	year := time.Now().Year()
-	//	yearStart := time.Time{}
-	//	yearStart.AddDate(year, 0, 0)
+	year := time.Now().Year()
 	data := gico.NewDataSet()
 	err = cIter.ForEach(func(c *object.Commit) error {
 		ts := c.Author.When
@@ -40,9 +38,13 @@ func main() {
 		data[roundedTS] = wd
 		return nil
 	})
-	freq := [366]int{}
+	yearLength := 365
+	if year%4 == 0 {
+		yearLength++
+	}
+	freq := make([]int, yearLength)
 	for k, v := range data {
-		if k.Year() != time.Now().Year() {
+		if k.Year() != year {
 			continue
 		}
 		// this is equivalent to adding len(commits) to the freq total, but
