@@ -14,7 +14,7 @@ type DataSet map[time.Time]gico.WorkDay
 
 func main() {
 
-	r, err := git.PlainOpen("../.git")
+	r, err := git.PlainOpen(".git")
 	if err != nil {
 		log.Printf("%v\n", err)
 	}
