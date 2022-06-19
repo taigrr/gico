@@ -1,7 +1,8 @@
 package main
 
 import (
-	"log"
+	"fmt"
+	"os"
 	"time"
 
 	git "github.com/go-git/go-git/v5"
@@ -14,9 +15,10 @@ type DataSet map[time.Time]gico.WorkDay
 
 func main() {
 
-	r, err := git.PlainOpen(".git")
+	r, err := git.PlainOpenWithOptions(".", &(git.PlainOpenOptions{DetectDotGit: true}))
 	if err != nil {
-		log.Printf("%v\n", err)
+		fmt.Printf("gitfetch error: Could not find a git repository to open!\n")
+		os.Exit(1)
 	}
 	ref, err := r.Head()
 	cIter, err := r.Log(&git.LogOptions{From: ref.Hash()})
