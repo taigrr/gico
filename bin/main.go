@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/taigrr/gitgraph/graph"
+	"github.com/taigrr/gitgraph/svg"
 )
 
 type DayCount [366]int
@@ -22,7 +22,7 @@ func main() {
 			freq = append(freq, rand.Int())
 		}
 		w.Header().Add("Content-Type", "text/html")
-		svg := graph.GetWeekSVG(freq)
+		svg := svg.GetWeekSVG(freq)
 		svg.WriteTo(w)
 
 	})
@@ -31,11 +31,11 @@ func main() {
 		for i := 0; i < 365; i++ {
 			freq = append(freq, rand.Int())
 		}
-		svg := graph.GetYearSVG(freq)
+		svg := svg.GetYearSVG(freq)
 		w.Header().Add("Content-Type", "text/html")
 		svg.WriteTo(w)
 
 	})
 
-	http.ListenAndServe("0.0.0.0:5578", r)
+	http.ListenAndServe(":8080", r)
 }
