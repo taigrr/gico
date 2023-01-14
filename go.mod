@@ -1,6 +1,6 @@
 module github.com/taigrr/gitgraph
 
-go 1.18
+go 1.19
 
 replace github.com/taigrr/go-colorpallettes => ../go-colorpallettes
 
