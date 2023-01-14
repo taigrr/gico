@@ -13,11 +13,13 @@ import (
 	"github.com/srwiley/oksvg"
 	"github.com/srwiley/rasterx"
 	"github.com/taigrr/gitgraph/common"
-	sc "github.com/taigrr/go-colorpallettes/simplecolor"
+	sc "github.com/taigrr/simplecolorpalettes"
 )
 
-var colorsLoaded sync.Once
-var colorScheme []sc.SimpleColor
+var (
+	colorsLoaded sync.Once
+	colorScheme  []sc.SimpleColor
+)
 
 func GetWeekSVG(frequencies []int) bytes.Buffer {
 	squareColors := []sc.SimpleColor{}
@@ -44,6 +46,7 @@ func drawWeekImage(c []sc.SimpleColor) bytes.Buffer {
 	sbw.Flush()
 	return sb
 }
+
 func GetYearSVG(frequencies []int) bytes.Buffer {
 	squareColors := []sc.SimpleColor{}
 	min, max := common.MinMax(frequencies)
@@ -54,7 +57,7 @@ func GetYearSVG(frequencies []int) bytes.Buffer {
 }
 
 func drawYearImage(c []sc.SimpleColor) bytes.Buffer {
-	//TODO here, draw suqares in appropriate colors, hopefully as an svg
+	// TODO here, draw suqares in appropriate colors, hopefully as an svg
 	var sb bytes.Buffer
 	sbw := bufio.NewWriter(&sb)
 	squareLength := 10
@@ -72,6 +75,7 @@ func drawYearImage(c []sc.SimpleColor) bytes.Buffer {
 	sbw.Flush()
 	return sb
 }
+
 func svgToPng() {
 	w, h := 512, 512
 

@@ -7,11 +7,13 @@ import (
 
 	"github.com/muesli/termenv"
 	"github.com/taigrr/gitgraph/common"
-	sc "github.com/taigrr/go-colorpallettes/simplecolor"
+	sc "github.com/taigrr/simplecolorpalettes"
 )
 
-var colorsLoaded sync.Once
-var colorScheme []sc.SimpleColor
+var (
+	colorsLoaded sync.Once
+	colorScheme  []sc.SimpleColor
+)
 
 func GetWeekUnicode(frequencies []int) {
 	squareColors := []sc.SimpleColor{}
@@ -21,8 +23,9 @@ func GetWeekUnicode(frequencies []int) {
 	}
 	drawWeekUnicode(squareColors)
 }
+
 func drawWeekUnicode(c []sc.SimpleColor) {
-	//o := termenv.NewOutput(os.Stdout)
+	// o := termenv.NewOutput(os.Stdout)
 	o := termenv.NewOutputWithProfile(os.Stdout, termenv.TrueColor)
 	for w, color := range c {
 		style := o.String(block).Foreground(termenv.TrueColor.Color(color.HexString()))
@@ -44,8 +47,9 @@ func GetYearUnicode(frequencies []int) {
 	}
 	drawYearUnicode(squareColors)
 }
+
 func drawYearUnicode(c []sc.SimpleColor) {
-	//o := termenv.NewOutput(os.Stdout)
+	// o := termenv.NewOutput(os.Stdout)
 	o := termenv.NewOutputWithProfile(os.Stdout, termenv.TrueColor)
 	weeks := [7][]sc.SimpleColor{{}}
 	for i := 0; i < 7; i++ {

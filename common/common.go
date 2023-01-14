@@ -6,11 +6,13 @@ import (
 	"math"
 	"sync"
 
-	sc "github.com/taigrr/go-colorpallettes/simplecolor"
+	sc "github.com/taigrr/simplecolorpalettes"
 )
 
-var colorsLoaded sync.Once
-var colorScheme []sc.SimpleColor
+var (
+	colorsLoaded sync.Once
+	colorScheme  []sc.SimpleColor
+)
 
 func CreateGraph() bytes.Buffer {
 	var x bytes.Buffer
@@ -50,6 +52,7 @@ func ColorForFrequency(freq, min, max int) sc.SimpleColor {
 	}
 	return colorScheme[colorIndex]
 }
+
 func MinMax(f []int) (int, int) {
 	min, max := math.MaxInt, math.MinInt
 	for _, x := range f {

@@ -2,8 +2,6 @@ module github.com/taigrr/gitgraph
 
 go 1.19
 
-replace github.com/taigrr/go-colorpallettes => ../go-colorpallettes
-
 replace github.com/muesli/termenv => github.com/taigrr/termenv v0.11.2
 
 require (
@@ -12,7 +10,7 @@ require (
 	github.com/muesli/termenv v0.11.1
 	github.com/srwiley/oksvg v0.0.0-20220128195007-1f435e4c2b44
 	github.com/srwiley/rasterx v0.0.0-20220615024203-67b7089efd25
-	github.com/taigrr/go-colorpallettes v0.0.0-00010101000000-000000000000
+	github.com/taigrr/simplecolorpalettes v0.9.5
 )
 
 require (
