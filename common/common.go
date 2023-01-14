@@ -3,6 +3,7 @@ package common
 import (
 	"bytes"
 	"image/color"
+	"math"
 	"sync"
 
 	sc "github.com/taigrr/go-colorpallettes/simplecolor"
@@ -17,7 +18,7 @@ func CreateGraph() bytes.Buffer {
 }
 
 func init() {
-	colors := []string{"#767960", "#a7297f", "#e8ca89", "#f5efd6", "#858966"}
+	colors := []string{"#767960", "#a7297f", "#e8ca89", "#f5efd6", "#158266"}
 	// colors = []string{"#000000", "#0e4429", "#006d32", "#26a641", "#39d353"}
 	for _, c := range colors {
 		color := sc.FromHexString(c)
@@ -32,7 +33,13 @@ func SetColorScheme(c []color.Color) {
 }
 
 func ColorForFrequency(freq, min, max int) sc.SimpleColor {
+	if freq == 0 {
+		return sc.SimpleColor(0)
+	}
 	spread := max - min
+	if spread < len(colorScheme) {
+		return colorScheme[freq-min]
+	}
 	interval := float64(spread) / float64(len(colorScheme))
 	colorIndex := 0
 	for i := float64(min); i < float64(freq); i += float64(interval) {
@@ -44,13 +51,22 @@ func ColorForFrequency(freq, min, max int) sc.SimpleColor {
 	return colorScheme[colorIndex]
 }
 func MinMax(f []int) (int, int) {
-	min, max := 0, 0
+	min, max := math.MaxInt, math.MinInt
 	for _, x := range f {
+		if x == 0 {
+			continue
+		}
 		if x < min {
 			min = x
 		} else if x > max {
 			max = x
 		}
+	}
+	if min == math.MaxInt {
+		min = 0
+	}
+	if max == math.MinInt {
+		max = 0
 	}
 	return min, max
 }
