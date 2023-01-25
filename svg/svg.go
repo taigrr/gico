@@ -12,8 +12,9 @@ import (
 	svg "github.com/ajstarks/svgo"
 	"github.com/srwiley/oksvg"
 	"github.com/srwiley/rasterx"
+	sc "github.com/taigrr/simplecolorpalettes/simplecolor"
+
 	"github.com/taigrr/gitgraph/common"
-	sc "github.com/taigrr/simplecolorpalettes"
 )
 
 var (
@@ -40,7 +41,7 @@ func drawWeekImage(c []sc.SimpleColor) bytes.Buffer {
 	canvas.Start(width, height)
 	canvas.Rect(0, 0, width, height, "fill:black")
 	for i, s := range c {
-		canvas.Square(squareLength*2*(i+1), squareLength/2, squareLength, fmt.Sprintf("fill:%s", s.HexString()))
+		canvas.Square(squareLength*2*(i+1), squareLength/2, squareLength, fmt.Sprintf("fill:%s", s.ToHex()))
 	}
 	canvas.End()
 	sbw.Flush()
@@ -66,7 +67,7 @@ func drawYearImage(c []sc.SimpleColor) bytes.Buffer {
 	canvas := svg.New(sbw)
 	canvas.Start(width, height)
 	for i, s := range c {
-		canvas.Square(2*squareLength+width/(len(c)/7+1)*(i/7)+squareLength*2, squareLength/2+height/7*(i%7), squareLength, fmt.Sprintf("fill:%s", s.HexString()))
+		canvas.Square(2*squareLength+width/(len(c)/7+1)*(i/7)+squareLength*2, squareLength/2+height/7*(i%7), squareLength, fmt.Sprintf("fill:%s", s.ToHex()))
 	}
 	canvas.Text(2*squareLength, squareLength*3, "Mon", fmt.Sprintf("text-anchor:middle;font-size:%dpx;fill:black", squareLength))
 	canvas.Text(2*squareLength, int(float64(squareLength)*6.5), "Wed", fmt.Sprintf("text-anchor:middle;font-size:%dpx;fill:black", squareLength))

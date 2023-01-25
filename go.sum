@@ -18,8 +18,8 @@ github.com/srwiley/oksvg v0.0.0-20220128195007-1f435e4c2b44 h1:XPYXKIuH/n5zpUoEW
 github.com/srwiley/oksvg v0.0.0-20220128195007-1f435e4c2b44/go.mod h1:cNQ3dwVJtS5Hmnjxy6AgTPd0Inb3pW05ftPSX7NZO7Q=
 github.com/srwiley/rasterx v0.0.0-20220615024203-67b7089efd25 h1:uyi1c8AxAw2b9MTr639iqz45FMFb4dDR7rB++NaVooo=
 github.com/srwiley/rasterx v0.0.0-20220615024203-67b7089efd25/go.mod h1:nXTWP6+gD5+LUJ8krVhhoeHjvHTutPxMYl5SvkcnJNE=
-github.com/taigrr/simplecolorpalettes v0.9.5 h1:XPyRYwCHh+0ra/7Qw5c9yQf/O4yeLkuqx2X1tVuBE2U=
-github.com/taigrr/simplecolorpalettes v0.9.5/go.mod h1:MFLQqI3JOfSc+8GiO3amYfzBiozxITaQi+F1iEV8XpQ=
+github.com/taigrr/simplecolorpalettes v0.9.6 h1:eEFLPdI1o34t+YHs+QlgxcpN4zOg+5S3SlWt2EMS/6o=
+github.com/taigrr/simplecolorpalettes v0.9.6/go.mod h1:MFLQqI3JOfSc+8GiO3amYfzBiozxITaQi+F1iEV8XpQ=
 github.com/taigrr/termenv v0.11.2 h1:oqZR08HjGIzFWml4ROmoFvWi3KRG4UZYTPRrI9/lrPA=
 github.com/taigrr/termenv v0.11.2/go.mod h1:Bd5NYQ7pd+SrtBSrSNoBBmXlcY8+Xj4BMJgh8qcZrvs=
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=

@@ -6,8 +6,9 @@ import (
 	"sync"
 
 	"github.com/muesli/termenv"
+	sc "github.com/taigrr/simplecolorpalettes/simplecolor"
+
 	"github.com/taigrr/gitgraph/common"
-	sc "github.com/taigrr/simplecolorpalettes"
 )
 
 var (
@@ -28,7 +29,7 @@ func drawWeekUnicode(c []sc.SimpleColor) {
 	// o := termenv.NewOutput(os.Stdout)
 	o := termenv.NewOutputWithProfile(os.Stdout, termenv.TrueColor)
 	for w, color := range c {
-		style := o.String(block).Foreground(termenv.TrueColor.Color(color.HexString()))
+		style := o.String(block).Foreground(termenv.TrueColor.Color(color.ToHex()))
 		fmt.Print(style.String())
 		//	termenv.SetForegroundColor(termenv.ForegroundColor())
 		if w == len(c)-1 {
@@ -60,7 +61,7 @@ func drawYearUnicode(c []sc.SimpleColor) {
 	}
 	for _, row := range weeks {
 		for w, d := range row {
-			style := o.String(block).Foreground(termenv.TrueColor.Color(d.HexString()))
+			style := o.String(block).Foreground(termenv.TrueColor.Color(d.ToHex()))
 			fmt.Print(style.String())
 			if w == len(row)-1 {
 				fmt.Println()

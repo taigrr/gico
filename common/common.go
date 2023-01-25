@@ -6,7 +6,7 @@ import (
 	"math"
 	"sync"
 
-	sc "github.com/taigrr/simplecolorpalettes"
+	sc "github.com/taigrr/simplecolorpalettes/simplecolor"
 )
 
 var (
@@ -21,7 +21,7 @@ func CreateGraph() bytes.Buffer {
 
 func init() {
 	colors := []string{"#767960", "#a7297f", "#e8ca89", "#f5efd6", "#158266"}
-	// colors = []string{"#000000", "#0e4429", "#006d32", "#26a641", "#39d353"}
+	colors = []string{"#000000", "#0e4429", "#006d32", "#26a641", "#39d353"}
 	for _, c := range colors {
 		color := sc.FromHexString(c)
 		colorScheme = append(colorScheme, color)
@@ -39,8 +39,8 @@ func ColorForFrequency(freq, min, max int) sc.SimpleColor {
 		return sc.SimpleColor(0)
 	}
 	spread := max - min
-	if spread < len(colorScheme) {
-		return colorScheme[freq-min]
+	if spread < len(colorScheme)+1 {
+		return colorScheme[freq-min+1]
 	}
 	interval := float64(spread) / float64(len(colorScheme))
 	colorIndex := 0
