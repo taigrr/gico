@@ -12,6 +12,9 @@ import (
 )
 
 func main() {
+	GetYear()
+}
+func GetYear() {
 
 	r, err := git.PlainOpenWithOptions(".", &(git.PlainOpenOptions{DetectDotGit: true}))
 	if err != nil {
@@ -54,4 +57,5 @@ func main() {
 		}
 	}
 	gterm.GetYearUnicode(freq[:])
+
 }

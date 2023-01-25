@@ -2,8 +2,6 @@ module github.com/taigrr/gico
 
 go 1.18
 
-replace github.com/taigrr/go-colorpallettes => ../go-colorpallettes
-
 replace github.com/charmbracelet/bubbles => github.com/taigrr/bubbles v0.10.5
 
 replace github.com/muesli/termenv => github.com/taigrr/termenv v0.11.2
@@ -39,7 +37,7 @@ require (
 	github.com/muesli/termenv v0.11.1 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
-	github.com/taigrr/go-colorpallettes v0.0.0-00010101000000-000000000000 // indirect
+	github.com/taigrr/simplecolorpalettes v0.9.6 // indirect
 	github.com/xanzy/ssh-agent v0.3.0 // indirect
 	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b // indirect
 	golang.org/x/net v0.0.0-20211118161319-6a13c67c3ce4 // indirect
