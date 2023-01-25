@@ -1,4 +1,4 @@
-package gico
+package main
 
 import (
 	"flag"
@@ -61,20 +61,22 @@ type WorkDay struct {
 }
 
 func NewCommit(Author, Message, Repo, Path string, LOC int) Commit {
-	ci := Commit{Message: Message,
-		Author: Author, LOC: LOC, TimeStamp: time.Now(),
-		Repo: Repo, Path: Path}
+	ci := Commit{
+		Message: Message,
+		Author:  Author, LOC: LOC, TimeStamp: time.Now(),
+		Repo: Repo, Path: Path,
+	}
 	return ci
 }
 
 func loadRepo() {
-
 }
 
 func readCommitDB() DataSet {
 	ds := DataSet{}
 	return ds
 }
+
 func printHelp() {
 	fmt.Println("help:")
 }

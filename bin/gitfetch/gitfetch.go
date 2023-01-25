@@ -7,15 +7,16 @@ import (
 
 	git "github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
-	"github.com/taigrr/gico"
 	gterm "github.com/taigrr/gitgraph/term"
+
+	"github.com/taigrr/gico"
 )
 
 func main() {
 	GetYear()
 }
-func GetYear() {
 
+func GetYear() {
 	r, err := git.PlainOpenWithOptions(".", &(git.PlainOpenOptions{DetectDotGit: true}))
 	if err != nil {
 		fmt.Printf("gitfetch error: Could not find a git repository to open!\n")
@@ -56,6 +57,5 @@ func GetYear() {
 			freq[k.YearDay()-1]++
 		}
 	}
-	gterm.GetYearUnicode(freq[:])
-
+	gterm.GetYearUnicode(freq)
 }
