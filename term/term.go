@@ -3,6 +3,7 @@ package term
 import (
 	"fmt"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/muesli/termenv"
@@ -40,17 +41,18 @@ func drawWeekUnicode(c []sc.SimpleColor) {
 	}
 }
 
-func GetYearUnicode(frequencies []int) {
+func GetYearUnicode(frequencies []int) string {
 	squareColors := []sc.SimpleColor{}
 	min, max := common.MinMax(frequencies)
 	for _, f := range frequencies {
 		squareColors = append(squareColors, common.ColorForFrequency(f, min, max))
 	}
-	drawYearUnicode(squareColors)
+	return drawYearUnicode(squareColors)
 }
 
-func drawYearUnicode(c []sc.SimpleColor) {
+func drawYearUnicode(c []sc.SimpleColor) string {
 	// o := termenv.NewOutput(os.Stdout)
+	var s strings.Builder
 	o := termenv.NewOutputWithProfile(os.Stdout, termenv.TrueColor)
 	weeks := [7][]sc.SimpleColor{{}}
 	for i := 0; i < 7; i++ {
@@ -62,13 +64,14 @@ func drawYearUnicode(c []sc.SimpleColor) {
 	for _, row := range weeks {
 		for w, d := range row {
 			style := o.String(block).Foreground(termenv.TrueColor.Color(d.ToHex()))
-			fmt.Print(style.String())
+			s.WriteString(style.String())
 			if w == len(row)-1 {
-				fmt.Println()
+				s.WriteString("\n")
 			} else {
-				fmt.Print(" ")
+				s.WriteString(" ")
 			}
 
 		}
 	}
+	return s.String()
 }
