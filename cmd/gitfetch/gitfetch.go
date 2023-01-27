@@ -60,5 +60,5 @@ func GetYear() {
 			freq[k.YearDay()-1]++
 		}
 	}
-	gterm.GetYearUnicode(freq)
+	fmt.Print(gterm.GetYearUnicode(freq))
 }
