@@ -13,11 +13,13 @@ import (
 )
 
 func main() {
-	GetYear()
+	year := time.Now().Year()
+	for i := year - 4; i <= year; i++ {
+		GetYear(i)
+	}
 }
 
-func GetYear() {
-	year := time.Now().Year()
+func GetYear(year int) {
 	yearLength := 365
 	if year%4 == 0 {
 		yearLength++
