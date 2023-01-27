@@ -39,7 +39,7 @@ func ColorForFrequency(freq, min, max int) sc.SimpleColor {
 		return sc.SimpleColor(0)
 	}
 	spread := max - min
-	if spread < len(colorScheme)+1 {
+	if spread < len(colorScheme)-1 {
 		return colorScheme[freq-min+1]
 	}
 	interval := float64(spread) / float64(len(colorScheme))
