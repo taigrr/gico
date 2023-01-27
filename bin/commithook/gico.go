@@ -9,8 +9,6 @@ import (
 	"github.com/taigrr/gico/ui"
 )
 
-type Month string
-
 var days [366]int
 
 func init() {
@@ -26,6 +24,7 @@ func main() {
 		os.Exit(0)
 	}
 	switch args[0] {
+	// TODO use cobra-cli instead of switch case
 	case "inc", "increment", "add":
 		increment()
 	case "graph":
@@ -39,29 +38,12 @@ func main() {
 	}
 }
 
-type Commit struct {
-	LOC       int       `json:"loc,omitempty"`
-	Message   string    `json:"message,omitempty"`
-	TimeStamp time.Time `json:"ts,omitempty"`
-	Author    string    `json:"author,omitempty"`
-	Repo      string    `json:"repo,omitempty"`
-	Path      string    `json:"path,omitempty"`
+func NewDataSet() types.DataSet {
+	return make(types.DataSet)
 }
 
-type DataSet map[time.Time]WorkDay
-
-func NewDataSet() DataSet {
-	return make(DataSet)
-}
-
-type WorkDay struct {
-	Day     time.Time `json:"day"`
-	Count   int       `json:"count"`
-	Commits []Commit  `json:"commits,omitempty"`
-}
-
-func NewCommit(Author, Message, Repo, Path string, LOC int) Commit {
-	ci := Commit{
+func NewCommit(Author, Message, Repo, Path string, LOC int) types.Commit {
+	ci := types.Commit{
 		Message: Message,
 		Author:  Author, LOC: LOC, TimeStamp: time.Now(),
 		Repo: Repo, Path: Path,
@@ -72,8 +54,8 @@ func NewCommit(Author, Message, Repo, Path string, LOC int) Commit {
 func loadRepo() {
 }
 
-func readCommitDB() DataSet {
-	ds := DataSet{}
+func readCommitDB() types.DataSet {
+	ds := types.DataSet{}
 	return ds
 }
 
