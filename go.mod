@@ -4,6 +4,8 @@ go 1.19
 
 replace github.com/charmbracelet/bubbles => github.com/taigrr/bubbles v0.10.5
 
+replace github.com/taigrr/mg => ../mg
+
 replace github.com/muesli/termenv => github.com/taigrr/termenv v0.11.2
 
 replace github.com/charmbracelet/lipgloss => github.com/taigrr/lipgloss v0.5.1
@@ -39,6 +41,7 @@ require (
 	github.com/rivo/uniseg v0.4.3 // indirect
 	github.com/sergi/go-diff v1.3.1 // indirect
 	github.com/skeema/knownhosts v1.1.0 // indirect
+	github.com/taigrr/mg v0.0.0-00010101000000-000000000000 // indirect
 	github.com/taigrr/simplecolorpalettes v0.9.6 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	golang.org/x/crypto v0.5.0 // indirect

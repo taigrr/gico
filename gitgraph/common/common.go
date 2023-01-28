@@ -21,7 +21,7 @@ func CreateGraph() bytes.Buffer {
 
 func init() {
 	colors := []string{"#767960", "#a7297f", "#e8ca89", "#f5efd6", "#158266"}
-	// colors = []string{"#000000", "#0e4429", "#006d32", "#26a641", "#39d353"}
+	colors = []string{"#000000", "#0e4429", "#006d32", "#26a641", "#39d353"}
 	for _, c := range colors {
 		color := sc.FromHexString(c)
 		colorScheme = append(colorScheme, color)
