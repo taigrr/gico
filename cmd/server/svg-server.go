@@ -7,6 +7,7 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"github.com/taigrr/gico/commits"
 	"github.com/taigrr/gico/gitgraph/svg"
 )
 
@@ -28,9 +29,9 @@ func main() {
 		svg.WriteTo(w)
 	})
 	r.HandleFunc("/yearly.svg", func(w http.ResponseWriter, r *http.Request) {
-		freq := []int{}
-		for i := 0; i < 365; i++ {
-			freq = append(freq, rand.Int())
+		freq, err := commits.GlobalFrequency(2022, []string{"Groot"})
+		if err != nil {
+			panic(err)
 		}
 		svg := svg.GetYearSVG(freq)
 		w.Header().Add("Content-Type", "text/html")
