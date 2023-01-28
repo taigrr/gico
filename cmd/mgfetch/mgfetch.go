@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"regexp"
 	"time"
 
 	git "github.com/go-git/go-git/v5"
@@ -21,9 +22,7 @@ func main() {
 	if year%4 == 0 {
 		yearLength++
 	}
-
 	gfreq := make(types.YearFreq, yearLength)
-
 	mrconf, err := parse.LoadMRConfig()
 	if err != nil {
 		panic(err)
@@ -34,11 +33,16 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		freq, err := repo.GetYear(year)
-		gfreq = gfreq.Merge(freq)
+		commits, err := repo.GetCommitSetForYear(year)
 		if err != nil {
 			panic(err)
 		}
+		commits, err = commits.FilterByAuthorRegex([]string{"Groot"})
+		if err != nil {
+			panic(err)
+		}
+		freq := commits.ToYearFreq()
+		gfreq = gfreq.Merge(freq)
 	}
 	fmt.Print(gfreq.String())
 }
@@ -51,30 +55,25 @@ func OpenRepo(directory string) (Repo, error) {
 			return Repo{}, errors.New("received path to non-directory for git repo")
 		}
 	}
-
 	r, err := git.PlainOpenWithOptions(directory, &(git.PlainOpenOptions{DetectDotGit: true}))
 	return Repo(*r), err
 }
 
-func (repo Repo) GetYear(year int) (types.YearFreq, error) {
+type CommitSet struct {
+	Commits []types.Commit
+	Year    int
+}
+
+func (cs CommitSet) ToYearFreq() types.YearFreq {
+	year := cs.Year
 	yearLength := 365
 	if year%4 == 0 {
 		yearLength++
 	}
 	freq := make([]int, yearLength)
 	data := types.NewDataSet()
-	r := git.Repository(repo)
-	ref, err := r.Head()
-	if err != nil {
-		return freq, err
-	}
-	cIter, err := r.Log(&git.LogOptions{From: ref.Hash()})
-	if err != nil {
-		return freq, err
-	}
-	err = cIter.ForEach(func(c *object.Commit) error {
-		ts := c.Author.When
-		commit := types.Commit{Author: c.Author.Name, Message: c.Message, TimeStamp: ts}
+	for _, commit := range cs.Commits {
+		ts := commit.TimeStamp
 		roundedTS := ts.Round(time.Hour * 24)
 		wd, ok := data[roundedTS]
 		if !ok {
@@ -85,9 +84,7 @@ func (repo Repo) GetYear(year int) (types.YearFreq, error) {
 		wd.Count++
 		wd.Day = roundedTS
 		data[roundedTS] = wd
-		return nil
-	})
-
+	}
 	for k, v := range data {
 		if k.Year() != year {
 			continue
@@ -98,5 +95,55 @@ func (repo Repo) GetYear(year int) (types.YearFreq, error) {
 			freq[k.YearDay()-1]++
 		}
 	}
-	return freq, nil
+	return freq
+}
+
+func (cs CommitSet) FilterByAuthorRegex(authors []string) (CommitSet, error) {
+	regSet := [](*regexp.Regexp){}
+	for _, a := range authors {
+		r, err := regexp.Compile(a)
+		if err != nil {
+			return CommitSet{}, err
+		}
+		regSet = append(regSet, r)
+	}
+	newCS := CommitSet{Year: cs.Year}
+	for _, commit := range cs.Commits {
+		for _, r := range regSet {
+			if r.MatchString(commit.Author) {
+				newCS.Commits = append(newCS.Commits, commit)
+				break
+			}
+		}
+	}
+	return newCS, nil
+}
+
+func (repo Repo) GetCommitSetForYear(year int) (CommitSet, error) {
+	yearLength := 365
+	if year%4 == 0 {
+		yearLength++
+	}
+	cs := CommitSet{}
+	commits := []types.Commit{}
+	r := git.Repository(repo)
+	ref, err := r.Head()
+	if err != nil {
+		return cs, err
+	}
+	cIter, err := r.Log(&git.LogOptions{From: ref.Hash()})
+	if err != nil {
+		return cs, err
+	}
+	err = cIter.ForEach(func(c *object.Commit) error {
+		ts := c.Author.When
+		commit := types.Commit{Author: c.Author.Name, Message: c.Message, TimeStamp: ts}
+		if commit.TimeStamp.Year() == year {
+			commits = append(commits, commit)
+		}
+		return nil
+	})
+	cs.Commits = commits
+	cs.Year = year
+	return cs, nil
 }
