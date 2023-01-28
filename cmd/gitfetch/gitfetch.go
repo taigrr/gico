@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -14,27 +15,47 @@ import (
 
 func main() {
 	year := time.Now().Year()
-	for i := year - 4; i <= year; i++ {
-		GetYear(i)
+	repo, err := OpenRepo(".")
+	if err != nil {
+		panic(err)
 	}
+	str, err := repo.GetYear(year)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Print(str)
 }
 
-func GetYear(year int) {
+type Repo git.Repository
+
+func OpenRepo(directory string) (Repo, error) {
+	if s, err := os.Stat(directory); err != nil {
+		return Repo{}, err
+	} else {
+		if !s.IsDir() {
+			return Repo{}, errors.New("received path to non-directory for git repo")
+		}
+	}
+
+	r, err := git.PlainOpenWithOptions(directory, &(git.PlainOpenOptions{DetectDotGit: true}))
+	return Repo(*r), err
+}
+
+func (repo Repo) GetYear(year int) (string, error) {
 	yearLength := 365
 	if year%4 == 0 {
 		yearLength++
 	}
 	data := types.NewDataSet()
-
-	r, err := git.PlainOpenWithOptions(".", &(git.PlainOpenOptions{DetectDotGit: true}))
-	if err != nil {
-		fmt.Printf("gitfetch error: Could not find a git repository to open!\n")
-		os.Exit(1)
-	}
+	r := git.Repository(repo)
 	ref, err := r.Head()
-	// TODO handle this error
+	if err != nil {
+		return "", err
+	}
 	cIter, err := r.Log(&git.LogOptions{From: ref.Hash()})
-
+	if err != nil {
+		return "", err
+	}
 	err = cIter.ForEach(func(c *object.Commit) error {
 		ts := c.Author.When
 		commit := types.Commit{Author: c.Author.Name, Message: c.Message, TimeStamp: ts}
@@ -62,5 +83,5 @@ func GetYear(year int) {
 			freq[k.YearDay()-1]++
 		}
 	}
-	fmt.Print(gterm.GetYearUnicode(freq))
+	return gterm.GetYearUnicode(freq), nil
 }
