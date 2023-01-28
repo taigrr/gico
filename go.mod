@@ -8,13 +8,10 @@ replace github.com/muesli/termenv => github.com/taigrr/termenv v0.11.2
 
 replace github.com/charmbracelet/lipgloss => github.com/taigrr/lipgloss v0.5.1
 
-replace github.com/taigrr/gitgraph => ../gitgraph
-
 require (
 	github.com/charmbracelet/bubbletea v0.23.1
 	github.com/charmbracelet/lipgloss v0.6.0
 	github.com/go-git/go-git/v5 v5.5.2
-	github.com/taigrr/gitgraph v0.0.0-00010101000000-000000000000
 )
 
 require (

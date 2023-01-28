@@ -5,12 +5,13 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/taigrr/gitgraph/term"
+	"github.com/taigrr/gico/gitgraph/term"
 )
 
 func init() {
 	rand.Seed(time.Now().UnixMilli())
 }
+
 func main() {
 	freq := []int{}
 	for i := 0; i < 7; i++ {
