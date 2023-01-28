@@ -8,11 +8,12 @@ import (
 
 	git "github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
-	gterm "github.com/taigrr/gico/gitgraph/term"
 
 	"github.com/taigrr/gico/types"
 	"github.com/taigrr/mg/parse"
 )
+
+type Repo git.Repository
 
 func main() {
 	year := time.Now().Year() - 1
@@ -21,7 +22,7 @@ func main() {
 		yearLength++
 	}
 
-	gfreq := make(YearFreq, yearLength)
+	gfreq := make(types.YearFreq, yearLength)
 
 	mrconf, err := parse.LoadMRConfig()
 	if err != nil {
@@ -42,22 +43,6 @@ func main() {
 	fmt.Print(gfreq.String())
 }
 
-type Repo git.Repository
-
-func (a YearFreq) Merge(b YearFreq) YearFreq {
-	x := len(a)
-	y := len(b)
-	if x < y {
-		x = y
-	}
-	c := make(YearFreq, x)
-	copy(c, a)
-	for i := 0; i < y; i++ {
-		c[i] += b[i]
-	}
-	return c
-}
-
 func OpenRepo(directory string) (Repo, error) {
 	if s, err := os.Stat(directory); err != nil {
 		return Repo{}, err
@@ -71,13 +56,7 @@ func OpenRepo(directory string) (Repo, error) {
 	return Repo(*r), err
 }
 
-type YearFreq []int
-
-func (yf YearFreq) String() string {
-	return gterm.GetYearUnicode(yf)
-}
-
-func (repo Repo) GetYear(year int) (YearFreq, error) {
+func (repo Repo) GetYear(year int) (types.YearFreq, error) {
 	yearLength := 365
 	if year%4 == 0 {
 		yearLength++
