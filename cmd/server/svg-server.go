@@ -3,6 +3,7 @@ package main
 import (
 	"math/rand"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -29,7 +30,14 @@ func main() {
 		svg.WriteTo(w)
 	})
 	r.HandleFunc("/yearly.svg", func(w http.ResponseWriter, r *http.Request) {
-		freq, err := commits.GlobalFrequency(2022, []string{"Groot"})
+		year := time.Now().Year()
+		yst := r.URL.Query().Get("year")
+		author := r.URL.Query().Get("author")
+		y, err := strconv.Atoi(yst)
+		if err == nil {
+			year = y
+		}
+		freq, err := commits.GlobalFrequency(year, []string{author})
 		if err != nil {
 			panic(err)
 		}
