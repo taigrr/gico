@@ -1,7 +1,6 @@
 package term
 
 import (
-	"fmt"
 	"os"
 	"strings"
 	"sync"
@@ -17,28 +16,30 @@ var (
 	colorScheme  []sc.SimpleColor
 )
 
-func GetWeekUnicode(frequencies []int) {
+func GetWeekUnicode(frequencies []int) string {
 	squareColors := []sc.SimpleColor{}
 	min, max := common.MinMax(frequencies)
 	for _, f := range frequencies {
 		squareColors = append(squareColors, common.ColorForFrequency(f, min, max))
 	}
-	drawWeekUnicode(squareColors)
+	return drawWeekUnicode(squareColors)
 }
 
-func drawWeekUnicode(c []sc.SimpleColor) {
+func drawWeekUnicode(c []sc.SimpleColor) string {
 	// o := termenv.NewOutput(os.Stdout)
+	s := strings.Builder{}
 	o := termenv.NewOutputWithProfile(os.Stdout, termenv.TrueColor)
 	for w, color := range c {
 		style := o.String(block).Foreground(termenv.TrueColor.Color(color.ToHex()))
-		fmt.Print(style.String())
+		s.WriteString(style.String())
 		//	termenv.SetForegroundColor(termenv.ForegroundColor())
 		if w == len(c)-1 {
-			fmt.Println()
+			s.WriteString("\n")
 		} else {
-			fmt.Print(" ")
+			s.WriteString(" ")
 		}
 	}
+	return s.String()
 }
 
 func GetYearUnicode(frequencies []int) string {

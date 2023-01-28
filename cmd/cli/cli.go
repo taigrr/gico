@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/taigrr/gico/commits"
 	"github.com/taigrr/gico/gitgraph/term"
 )
 
@@ -13,19 +14,24 @@ func init() {
 }
 
 func main() {
-	freq := []int{}
-	for i := 0; i < 7; i++ {
-		freq = append(freq, rand.Int())
+	wfreq := []int{}
+	yd := time.Now().YearDay()
+	freq, _ := commits.GlobalFrequency(time.Now().Year(), []string{""})
+	if yd < 7 {
+		//	xfreq, _ := commits.GlobalFrequency(time.Now().Year()-1, []string{""})
+	} else {
+		// TODO fix bug for negative in first week of Jan
+		for i := 0; i < 7; i++ {
+			d := time.Now().YearDay() - 1 - 6 + i
+			wfreq = append(wfreq, freq[d])
+		}
 	}
 	fmt.Println("week:")
-	term.GetWeekUnicode(freq)
+	fmt.Println(term.GetWeekUnicode(wfreq))
 	fmt.Println()
 	fmt.Println()
 	fmt.Println()
-	freq = []int{}
-	for i := 0; i < 365; i++ {
-		freq = append(freq, rand.Int())
-	}
+	freq, _ = commits.GlobalFrequency(time.Now().Year(), []string{""})
 	fmt.Println("year:")
-	term.GetYearUnicode(freq)
+	fmt.Println(term.GetYearUnicode(freq))
 }
