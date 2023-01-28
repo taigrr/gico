@@ -3,7 +3,7 @@ package graph
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/taigrr/gico/graph/help"
+	"github.com/taigrr/gico/ui/graph/help"
 )
 
 type Graph struct {

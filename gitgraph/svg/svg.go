@@ -69,9 +69,9 @@ func drawYearImage(c []sc.SimpleColor) bytes.Buffer {
 	for i, s := range c {
 		canvas.Square(2*squareLength+width/(len(c)/7+1)*(i/7)+squareLength*2, squareLength/2+height/7*(i%7), squareLength, fmt.Sprintf("fill:%s", s.ToHex()))
 	}
-	canvas.Text(2*squareLength, squareLength*3, "Mon", fmt.Sprintf("text-anchor:middle;font-size:%dpx;fill:black", squareLength))
-	canvas.Text(2*squareLength, int(float64(squareLength)*6.5), "Wed", fmt.Sprintf("text-anchor:middle;font-size:%dpx;fill:black", squareLength))
-	canvas.Text(2*squareLength, int(float64(squareLength))*10, "Fri", fmt.Sprintf("text-anchor:middle;font-size:%dpx;fill:black", squareLength))
+	// canvas.Text(2*squareLength, squareLength*3, "Mon", fmt.Sprintf("text-anchor:middle;font-size:%dpx;fill:black", squareLength))
+	// canvas.Text(2*squareLength, int(float64(squareLength)*6.5), "Wed", fmt.Sprintf("text-anchor:middle;font-size:%dpx;fill:black", squareLength))
+	// canvas.Text(2*squareLength, int(float64(squareLength))*10, "Fri", fmt.Sprintf("text-anchor:middle;font-size:%dpx;fill:black", squareLength))
 	canvas.End()
 	sbw.Flush()
 	return sb

@@ -6,7 +6,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/taigrr/gico/graph"
+	"github.com/taigrr/gico/ui/graph"
 )
 
 func InteractiveGraph() {
@@ -19,5 +19,4 @@ func InteractiveGraph() {
 		fmt.Printf("Error: %v", err)
 		os.Exit(1)
 	}
-
 }
