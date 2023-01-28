@@ -1,0 +1,3 @@
+package term
+
+const block = "▅"
