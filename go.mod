@@ -4,8 +4,6 @@ go 1.19
 
 replace github.com/charmbracelet/bubbles => github.com/taigrr/bubbles v0.10.5
 
-replace github.com/taigrr/mg => ../mg
-
 replace github.com/muesli/termenv => github.com/taigrr/termenv v0.11.2
 
 replace github.com/charmbracelet/lipgloss => github.com/taigrr/lipgloss v0.5.1
@@ -19,7 +17,7 @@ require (
 	github.com/muesli/termenv v0.13.0
 	github.com/srwiley/oksvg v0.0.0-20221011165216-be6e8873101c
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef
-	github.com/taigrr/mg v0.0.0-00010101000000-000000000000
+	github.com/taigrr/mg v0.0.1
 	github.com/taigrr/simplecolorpalettes v0.9.6
 )
 

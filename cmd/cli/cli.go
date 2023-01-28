@@ -31,7 +31,6 @@ func main() {
 	fmt.Println()
 	fmt.Println()
 	fmt.Println()
-	freq, _ = commits.GlobalFrequency(time.Now().Year(), []string{""})
 	fmt.Println("year:")
 	fmt.Println(term.GetYearUnicode(freq))
 }
