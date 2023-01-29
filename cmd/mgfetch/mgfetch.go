@@ -14,7 +14,7 @@ type Repo git.Repository
 func main() {
 	year := time.Now().Year() - 1
 	authors := []string{"Groot"}
-	gfreq, err := commits.GlobalFrequency(year, authors)
+	gfreq, err := commits.GlobalFrequencyChan(year, authors)
 	if err != nil {
 		panic(err)
 	}
