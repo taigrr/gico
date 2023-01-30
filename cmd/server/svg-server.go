@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -16,9 +17,31 @@ type DayCount [366]int
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/weekly.svg", func(w http.ResponseWriter, r *http.Request) {
-		freq := []int{}
+		author := r.URL.Query().Get("author")
 		w.Header().Add("Content-Type", "text/html")
-		svg := svg.GetWeekSVG(freq)
+		now := time.Now()
+		year := now.Year()
+		freq, err := commits.GlobalFrequencyChan(year, []string{author})
+		if err != nil {
+			panic(err)
+		}
+		today := now.YearDay() - 1
+		fmt.Println(today)
+		if today < 6 {
+			curYear := year - 1
+			curFreq, err := commits.GlobalFrequencyChan(curYear, []string{author})
+			if err != nil {
+				panic(err)
+			}
+			freq = append(curFreq, freq...)
+			today += 365
+			if curYear%4 == 0 {
+				today++
+			}
+		}
+		fmt.Println(freq)
+		week := freq[today-6 : today+1]
+		svg := svg.GetWeekSVG(week)
 		svg.WriteTo(w)
 	})
 	r.HandleFunc("/yearly.svg", func(w http.ResponseWriter, r *http.Request) {

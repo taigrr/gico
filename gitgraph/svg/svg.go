@@ -28,10 +28,10 @@ func GetWeekSVG(frequencies []int) bytes.Buffer {
 	for _, f := range frequencies {
 		squareColors = append(squareColors, common.ColorForFrequency(f, min, max))
 	}
-	return drawWeekImage(squareColors)
+	return drawWeekImage(squareColors, frequencies)
 }
 
-func drawWeekImage(c []sc.SimpleColor) bytes.Buffer {
+func drawWeekImage(c []sc.SimpleColor, freq []int) bytes.Buffer {
 	var sb bytes.Buffer
 	sbw := bufio.NewWriter(&sb)
 	squareLength := 10
@@ -41,7 +41,7 @@ func drawWeekImage(c []sc.SimpleColor) bytes.Buffer {
 	canvas.Start(width, height)
 	canvas.Rect(0, 0, width, height, "fill:black")
 	for i, s := range c {
-		canvas.Square(squareLength*2*(i+1), squareLength/2, squareLength, fmt.Sprintf("fill:%s", s.ToHex()))
+		canvas.Square(squareLength*2*(i+1), squareLength/2, squareLength, fmt.Sprintf("fill:%s; value:%d", s.ToHex(), freq[i]))
 	}
 	canvas.End()
 	sbw.Flush()
@@ -58,7 +58,6 @@ func GetYearSVG(frequencies []int) bytes.Buffer {
 }
 
 func drawYearImage(c []sc.SimpleColor) bytes.Buffer {
-	// TODO here, draw suqares in appropriate colors, hopefully as an svg
 	var sb bytes.Buffer
 	sbw := bufio.NewWriter(&sb)
 	squareLength := 10
