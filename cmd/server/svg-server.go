@@ -40,6 +40,7 @@ func main() {
 			}
 		}
 		fmt.Println(freq)
+
 		week := freq[today-6 : today+1]
 		svg := svg.GetWeekSVG(week)
 		svg.WriteTo(w)
