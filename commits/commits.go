@@ -54,13 +54,42 @@ func GlobalFrequencyChan(year int, authors []string) (types.YearFreq, error) {
 		wg.Wait()
 		close(outChan)
 	}()
-	commitSet := CommitSet{Year: year, Commits: []types.Commit{}}
-	for c := range outChan {
-		commitSet.Commits = append(commitSet.Commits, c)
-	}
-	freq := commitSet.ToYearFreq()
+	freq := YearFreqFromChan(outChan, year)
 
 	return freq, nil
+}
+
+func YearFreqFromChan(cc chan types.Commit, year int) types.YearFreq {
+	yearLength := 365
+	if year%4 == 0 {
+		yearLength++
+	}
+	freq := make([]int, yearLength)
+	data := types.NewDataSet()
+	for commit := range cc {
+		ts := commit.TimeStamp
+		roundedTS := ts.Round(time.Hour * 24)
+		wd, ok := data[roundedTS]
+		if !ok {
+			wd = types.WorkDay{}
+			wd.Commits = []types.Commit{}
+		}
+		wd.Commits = append(wd.Commits, commit)
+		wd.Count++
+		wd.Day = roundedTS
+		data[roundedTS] = wd
+	}
+	for k, v := range data {
+		if k.Year() != year {
+			continue
+		}
+		// this is equivalent to adding len(commits) to the freq total, but
+		// it's a stub for later when we do more here
+		for range v.Commits {
+			freq[k.YearDay()-1]++
+		}
+	}
+	return freq
 }
 
 func GlobalFrequency(year int, authors []string) (types.YearFreq, error) {
