@@ -138,29 +138,11 @@ func YearFreqFromChan(cc chan types.Commit, year int) types.YearFreq {
 		yearLength++
 	}
 	freq := make([]int, yearLength)
-	data := types.NewDataSet()
 	for commit := range cc {
-		ts := commit.TimeStamp
-		roundedTS := ts.Round(time.Hour * 24)
-		wd, ok := data[roundedTS]
-		if !ok {
-			wd = types.WorkDay{}
-			wd.Commits = []types.Commit{}
-		}
-		wd.Commits = append(wd.Commits, commit)
-		wd.Count++
-		wd.Day = roundedTS
-		data[roundedTS] = wd
-	}
-	for k, v := range data {
-		if k.Year() != year {
+		if commit.TimeStamp.Year() != year {
 			continue
 		}
-		// this is equivalent to adding len(commits) to the freq total, but
-		// it's a stub for later when we do more here
-		for range v.Commits {
-			freq[k.YearDay()-1]++
-		}
+		freq[commit.TimeStamp.YearDay()-1]++
 	}
 	return freq
 }
@@ -241,7 +223,7 @@ func (cs CommitSet) ToYearFreq() types.YearFreq {
 		// this is equivalent to adding len(commits) to the freq total, but
 		// it's a stub for later when we do more here
 		for range v.Commits {
-			freq[k.YearDay()-1]++
+			freq[k.YearDay()]++
 		}
 	}
 	return freq
