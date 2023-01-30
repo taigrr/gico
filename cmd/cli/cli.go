@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/taigrr/gico/commits"
-	"github.com/taigrr/gico/gitgraph/term"
+	"github.com/taigrr/gico/graph/term"
 )
 
 func init() {

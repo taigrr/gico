@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/taigrr/gico/commits"
-	"github.com/taigrr/gico/gitgraph/svg"
+	"github.com/taigrr/gico/graph/svg"
 )
 
 type DayCount [366]int

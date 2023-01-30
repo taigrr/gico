@@ -3,7 +3,7 @@ package types
 import (
 	"time"
 
-	gterm "github.com/taigrr/gico/gitgraph/term"
+	gterm "github.com/taigrr/gico/graph/term"
 )
 
 func NewDataSet() DataSet {

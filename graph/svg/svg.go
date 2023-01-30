@@ -14,7 +14,7 @@ import (
 	"github.com/srwiley/rasterx"
 	sc "github.com/taigrr/simplecolorpalettes/simplecolor"
 
-	"github.com/taigrr/gico/gitgraph/common"
+	"github.com/taigrr/gico/graph/common"
 )
 
 var (

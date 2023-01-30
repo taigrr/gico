@@ -8,7 +8,7 @@ import (
 
 	git "github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
-	gterm "github.com/taigrr/gico/gitgraph/term"
+	gterm "github.com/taigrr/gico/graph/term"
 
 	"github.com/taigrr/gico/types"
 )
