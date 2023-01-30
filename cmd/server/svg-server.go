@@ -37,7 +37,7 @@ func main() {
 		if err == nil {
 			year = y
 		}
-		freq, err := commits.GlobalFrequency(year, []string{author})
+		freq, err := commits.GlobalFrequencyChan(year, []string{author})
 		if err != nil {
 			panic(err)
 		}
