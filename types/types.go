@@ -14,9 +14,13 @@ type (
 		Repo      string    `json:"repo,omitempty"`
 		Path      string    `json:"path,omitempty"`
 	}
-	DataSet  map[time.Time]WorkDay
-	YearFreq []int
-	WorkDay  struct {
+	DataSet     map[time.Time]WorkDay
+	YearFreq    []int
+	ExpYearFreq struct {
+		YearFreq YearFreq
+		Created  time.Time
+	}
+	WorkDay struct {
 		Day     time.Time `json:"day"`
 		Count   int       `json:"count"`
 		Commits []Commit  `json:"commits,omitempty"`

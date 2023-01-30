@@ -1,7 +1,6 @@
 package main
 
 import (
-	"math/rand"
 	"net/http"
 	"strconv"
 	"time"
@@ -14,17 +13,10 @@ import (
 
 type DayCount [366]int
 
-func init() {
-	rand.Seed(time.Now().UnixMilli())
-}
-
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/weekly.svg", func(w http.ResponseWriter, r *http.Request) {
 		freq := []int{}
-		for i := 0; i < 7; i++ {
-			freq = append(freq, rand.Int())
-		}
 		w.Header().Add("Content-Type", "text/html")
 		svg := svg.GetWeekSVG(freq)
 		svg.WriteTo(w)
