@@ -42,6 +42,28 @@ func GlobalFrequency(year int, authors []string) (types.YearFreq, error) {
 	return gfreq, nil
 }
 
+func (repo Repo) GetCommitSet() (CommitSet, error) {
+	cs := CommitSet{}
+	commits := []types.Commit{}
+	r := git.Repository(repo)
+	ref, err := r.Head()
+	if err != nil {
+		return cs, err
+	}
+	cIter, err := r.Log(&git.LogOptions{From: ref.Hash()})
+	if err != nil {
+		return cs, err
+	}
+	cIter.ForEach(func(c *object.Commit) error {
+		ts := c.Author.When
+		commit := types.Commit{Author: c.Author.Name, Message: c.Message, TimeStamp: ts}
+		commits = append(commits, commit)
+		return nil
+	})
+	cs.Commits = commits
+	return cs, nil
+}
+
 func (cs CommitSet) ToYearFreq() types.YearFreq {
 	year := cs.Year
 	yearLength := 365
@@ -105,26 +127,4 @@ func (cs CommitSet) FilterByYear(year int) CommitSet {
 		}
 	}
 	return newCS
-}
-
-func (repo Repo) GetCommitSet() (CommitSet, error) {
-	cs := CommitSet{}
-	commits := []types.Commit{}
-	r := git.Repository(repo)
-	ref, err := r.Head()
-	if err != nil {
-		return cs, err
-	}
-	cIter, err := r.Log(&git.LogOptions{From: ref.Hash()})
-	if err != nil {
-		return cs, err
-	}
-	cIter.ForEach(func(c *object.Commit) error {
-		ts := c.Author.When
-		commit := types.Commit{Author: c.Author.Name, Message: c.Message, TimeStamp: ts}
-		commits = append(commits, commit)
-		return nil
-	})
-	cs.Commits = commits
-	return cs, nil
 }
