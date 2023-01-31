@@ -18,17 +18,17 @@ func NewCommit(Author, Message, Repo, Path string, LOC int) Commit {
 	}
 }
 
-func (yf YearFreq) String() string {
+func (yf Freq) String() string {
 	return gterm.GetYearUnicode(yf)
 }
 
-func (a YearFreq) Merge(b YearFreq) YearFreq {
+func (a Freq) Merge(b Freq) Freq {
 	x := len(a)
 	y := len(b)
 	if x < y {
 		x = y
 	}
-	c := make(YearFreq, x)
+	c := make(Freq, x)
 	copy(c, a)
 	for i := 0; i < y; i++ {
 		c[i] += b[i]

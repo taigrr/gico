@@ -8,19 +8,13 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/object"
 
 	"github.com/taigrr/gico/types"
-	"github.com/taigrr/mg/parse"
 )
 
-func GlobalFrequencyChan(year int, authors []string) (types.YearFreq, error) {
+func (paths RepoSet) FrequencyChan(year int, authors []string) (types.Freq, error) {
 	yearLength := 365
 	if year%4 == 0 {
 		yearLength++
 	}
-	mrconf, err := parse.LoadMRConfig()
-	if err != nil {
-		return types.YearFreq{}, err
-	}
-	paths := mrconf.GetRepoPaths()
 	cache, ok := GetCachedGraph(year, authors, paths)
 	if ok {
 		return cache, nil
@@ -58,6 +52,21 @@ func GlobalFrequencyChan(year int, authors []string) (types.YearFreq, error) {
 	return freq, nil
 }
 
+func YearFreqFromChan(cc chan types.Commit, year int) types.Freq {
+	yearLength := 365
+	if year%4 == 0 {
+		yearLength++
+	}
+	freq := make([]int, yearLength)
+	for commit := range cc {
+		if commit.TimeStamp.Year() != year {
+			continue
+		}
+		freq[commit.TimeStamp.YearDay()-1]++
+	}
+	return freq
+}
+
 func (repo Repo) GetCommitChan() (chan types.Commit, error) {
 	cc := make(chan types.Commit, 30)
 	r := git.Repository(repo)
@@ -81,7 +90,7 @@ func (repo Repo) GetCommitChan() (chan types.Commit, error) {
 	return cc, nil
 }
 
-func YearFreqFromChan(cc chan types.Commit, year int) types.YearFreq {
+func FreqFromChan(cc chan types.Commit, year int) types.Freq {
 	yearLength := 365
 	if year%4 == 0 {
 		yearLength++

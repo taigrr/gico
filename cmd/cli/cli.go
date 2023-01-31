@@ -9,13 +9,16 @@ import (
 )
 
 func main() {
-	wfreq := []int{}
-	yd := time.Now().YearDay()
+	n := time.Now()
 	repoPaths, err := commits.GetMRRepos()
 	if err != nil {
 		panic(err)
 	}
-	freq, err := repoPaths.GlobalFrequency(time.Now().Year(), []string{""})
+	freq, err := repoPaths.Frequency(n.Year(), []string{""})
+	if err != nil {
+		panic(err)
+	}
+	wfreq, err := repoPaths.GetWeekFreq([]string{""})
 	if err != nil {
 		panic(err)
 	}

@@ -13,11 +13,11 @@ import (
 
 var (
 	mapTex    sync.RWMutex
-	hashCache map[int]map[string]map[string]types.ExpYearFreq
+	hashCache map[int]map[string]map[string]types.ExpFreq
 )
 
 func init() {
-	hashCache = make(map[int]map[string]map[string]types.ExpYearFreq)
+	hashCache = make(map[int]map[string]map[string]types.ExpFreq)
 }
 
 func hashSlice(in []string) string {
@@ -32,22 +32,22 @@ func hashSlice(in []string) string {
 	return fmt.Sprintf("%x\n", b)
 }
 
-func GetCachedGraph(year int, authors []string, repoPaths []string) (types.YearFreq, bool) {
+func GetCachedGraph(year int, authors []string, repoPaths []string) (types.Freq, bool) {
 	a := hashSlice(authors)
 	r := hashSlice(repoPaths)
 	mapTex.RLock()
 	defer mapTex.RUnlock()
 	if m1, ok := hashCache[year]; !ok {
-		return types.YearFreq{}, false
+		return types.Freq{}, false
 	} else {
 		if m2, ok := m1[a]; !ok {
-			return types.YearFreq{}, false
+			return types.Freq{}, false
 		} else {
 			if freq, ok := m2[r]; !ok {
-				return types.YearFreq{}, false
+				return types.Freq{}, false
 			} else {
 				if freq.Created.Before(time.Now().Add(-15 * time.Minute)) {
-					return types.YearFreq{}, false
+					return types.Freq{}, false
 				} else {
 					return freq.YearFreq, true
 				}
@@ -56,18 +56,18 @@ func GetCachedGraph(year int, authors []string, repoPaths []string) (types.YearF
 	}
 }
 
-func CacheGraph(year int, authors, repoPaths []string, freq types.YearFreq) {
+func CacheGraph(year int, authors, repoPaths []string, freq types.Freq) {
 	a := hashSlice(authors)
 	r := hashSlice(repoPaths)
 	mapTex.Lock()
 	defer mapTex.Unlock()
 	if _, ok := hashCache[year]; !ok {
-		hashCache[year] = make(map[string]map[string]types.ExpYearFreq)
+		hashCache[year] = make(map[string]map[string]types.ExpFreq)
 	}
 	if _, ok := hashCache[year][a]; !ok {
-		hashCache[year][a] = make(map[string]types.ExpYearFreq)
+		hashCache[year][a] = make(map[string]types.ExpFreq)
 	}
-	hashCache[year][a][r] = types.ExpYearFreq{YearFreq: freq, Created: time.Now()}
+	hashCache[year][a][r] = types.ExpFreq{YearFreq: freq, Created: time.Now()}
 	go func() {
 		time.Sleep(time.Minute * 15)
 		mapTex.Lock()

@@ -55,14 +55,14 @@ func drawYearUnicode(c []sc.SimpleColor) string {
 	// o := termenv.NewOutput(os.Stdout)
 	var s strings.Builder
 	o := termenv.NewOutputWithProfile(os.Stdout, termenv.TrueColor)
-	weeks := [7][]sc.SimpleColor{{}}
+	weekRows := [7][]sc.SimpleColor{{}}
 	for i := 0; i < 7; i++ {
-		weeks[i] = []sc.SimpleColor{}
+		weekRows[i] = []sc.SimpleColor{}
 	}
-	for i := range c {
-		weeks[i%7] = append(weeks[i%7], c[i])
+	for i := 0; i < len(c); i++ {
+		weekRows[i%7] = append(weekRows[i%7], c[i])
 	}
-	for _, row := range weeks {
+	for _, row := range weekRows {
 		for w, d := range row {
 			style := o.String(block).Foreground(termenv.TrueColor.Color(d.ToHex()))
 			s.WriteString(style.String())

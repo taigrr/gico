@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -19,33 +18,14 @@ func main() {
 	r.HandleFunc("/weekly.svg", func(w http.ResponseWriter, r *http.Request) {
 		author := r.URL.Query().Get("author")
 		w.Header().Add("Content-Type", "text/html")
-		now := time.Now()
-		year := now.Year()
 		repoPaths, err := commits.GetMRRepos()
 		if err != nil {
 			panic(err)
 		}
-		freq, err := repoPaths.FrequencyChan(year, []string{author})
+		week, err := repoPaths.GetWeekFreq([]string{author})
 		if err != nil {
 			panic(err)
 		}
-		today := now.YearDay() - 1
-		fmt.Println(today)
-		if today < 6 {
-			curYear := year - 1
-			curFreq, err := repoPaths.FrequencyChan(curYear, []string{author})
-			if err != nil {
-				panic(err)
-			}
-			freq = append(curFreq, freq...)
-			today += 365
-			if curYear%4 == 0 {
-				today++
-			}
-		}
-		fmt.Println(freq)
-
-		week := freq[today-6 : today+1]
 		svg := svg.GetWeekSVG(week)
 		svg.WriteTo(w)
 	})

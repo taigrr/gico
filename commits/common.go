@@ -16,6 +16,7 @@ type (
 		Commits []types.Commit
 		Year    int
 	}
+	RepoSet []string
 )
 
 func OpenRepo(directory string) (Repo, error) {

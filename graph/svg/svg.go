@@ -54,10 +54,10 @@ func GetYearSVG(frequencies []int) bytes.Buffer {
 	for _, f := range frequencies {
 		squareColors = append(squareColors, common.ColorForFrequency(f, min, max))
 	}
-	return drawYearImage(squareColors)
+	return drawYearImage(squareColors, frequencies)
 }
 
-func drawYearImage(c []sc.SimpleColor) bytes.Buffer {
+func drawYearImage(c []sc.SimpleColor, freq []int) bytes.Buffer {
 	var sb bytes.Buffer
 	sbw := bufio.NewWriter(&sb)
 	squareLength := 10
@@ -66,7 +66,7 @@ func drawYearImage(c []sc.SimpleColor) bytes.Buffer {
 	canvas := svg.New(sbw)
 	canvas.Start(width, height)
 	for i, s := range c {
-		canvas.Square(2*squareLength+width/(len(c)/7+1)*(i/7)+squareLength*2, squareLength/2+height/7*(i%7), squareLength, fmt.Sprintf("fill:%s", s.ToHex()))
+		canvas.Square(2*squareLength+width/(len(c)/7+1)*(i/7)+squareLength*2, squareLength/2+height/7*(i%7), squareLength, fmt.Sprintf("fill:%s; value:%d", s.ToHex(), freq[i]))
 	}
 	// canvas.Text(2*squareLength, squareLength*3, "Mon", fmt.Sprintf("text-anchor:middle;font-size:%dpx;fill:black", squareLength))
 	// canvas.Text(2*squareLength, int(float64(squareLength)*6.5), "Wed", fmt.Sprintf("text-anchor:middle;font-size:%dpx;fill:black", squareLength))
