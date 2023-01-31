@@ -28,7 +28,7 @@ func GetWeekUnicode(frequencies []int) string {
 func drawWeekUnicode(c []sc.SimpleColor) string {
 	// o := termenv.NewOutput(os.Stdout)
 	s := strings.Builder{}
-	o := termenv.NewOutputWithProfile(os.Stdout, termenv.TrueColor)
+	o := termenv.NewOutput(os.Stdout, termenv.WithProfile(termenv.TrueColor))
 	for w, color := range c {
 		style := o.String(block).Foreground(termenv.TrueColor.Color(color.ToHex()))
 		s.WriteString(style.String())
@@ -54,7 +54,7 @@ func GetYearUnicode(frequencies []int) string {
 func drawYearUnicode(c []sc.SimpleColor) string {
 	// o := termenv.NewOutput(os.Stdout)
 	var s strings.Builder
-	o := termenv.NewOutputWithProfile(os.Stdout, termenv.TrueColor)
+	o := termenv.NewOutput(os.Stdout, termenv.WithProfile(termenv.TrueColor))
 	weekRows := [7][]sc.SimpleColor{{}}
 	for i := 0; i < 7; i++ {
 		weekRows[i] = []sc.SimpleColor{}

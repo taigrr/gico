@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/taigrr/gico/types"
 	"github.com/taigrr/gico/ui"
 )
 

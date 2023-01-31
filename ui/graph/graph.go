@@ -2,13 +2,12 @@ package graph
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/taigrr/gico/ui/graph/help"
 )
 
 type Graph struct {
 	Help help.Help
-	df   lipgloss.DoeFoot
+	// df   lipgloss.DoeFoot
 }
 
 func (g Graph) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -50,8 +49,8 @@ func New() Graph {
 	return g
 }
 
-func (g Graph) UpdateDoeFoot(df lipgloss.DoeFoot) Graph {
-	g.df = df
-	g.Help = g.Help.UpdateDoeFoot(df)
-	return g
-}
+//func (g Graph) UpdateDoeFoot(df lipgloss.DoeFoot) Graph {
+//	g.df = df
+//	g.Help = g.Help.UpdateDoeFoot(df)
+//	return g
+//}

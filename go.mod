@@ -2,14 +2,15 @@ module github.com/taigrr/gico
 
 go 1.19
 
-replace github.com/charmbracelet/bubbles => github.com/taigrr/bubbles v0.10.5
+//replace github.com/charmbracelet/bubbles => github.com/taigrr/bubbles v0.10.5
 
-replace github.com/muesli/termenv => github.com/taigrr/termenv v0.11.2
+//replace github.com/muesli/termenv => github.com/taigrr/termenv v0.11.2
 
-replace github.com/charmbracelet/lipgloss => github.com/taigrr/lipgloss v0.5.1
+//replace github.com/charmbracelet/lipgloss => github.com/taigrr/lipgloss v0.5.1
 
 require (
 	github.com/ajstarks/svgo v0.0.0-20211024235047-1546f124cd8b
+	github.com/charmbracelet/bubbles v0.15.0
 	github.com/charmbracelet/bubbletea v0.23.1
 	github.com/charmbracelet/lipgloss v0.6.0
 	github.com/go-git/go-git/v5 v5.5.2
@@ -23,9 +24,10 @@ require (
 
 require (
 	github.com/Microsoft/go-winio v0.6.0 // indirect
-	github.com/ProtonMail/go-crypto v0.0.0-20230124153114-0acdc8ae009b // indirect
+	github.com/ProtonMail/go-crypto v0.0.0-20230127202215-f7f10de891d5 // indirect
 	github.com/acomagu/bufpipe v1.0.3 // indirect
-	github.com/cloudflare/circl v1.3.1 // indirect
+	github.com/aymanbagabas/go-osc52 v1.0.3 // indirect
+	github.com/cloudflare/circl v1.3.2 // indirect
 	github.com/containerd/console v1.0.3 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/go-git/gcfg v1.5.0 // indirect
