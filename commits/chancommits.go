@@ -59,9 +59,6 @@ func YearFreqFromChan(cc chan types.Commit, year int) types.Freq {
 	}
 	freq := make([]int, yearLength)
 	for commit := range cc {
-		if commit.TimeStamp.Year() != year {
-			continue
-		}
 		freq[commit.TimeStamp.YearDay()-1]++
 	}
 	return freq
@@ -131,10 +128,11 @@ func FilterCChanByAuthor(in chan types.Commit, authors []string) (chan types.Com
 	}
 	go func() {
 		for commit := range in {
+		regset:
 			for _, r := range regSet {
 				if r.MatchString(commit.Author) {
 					out <- commit
-					break
+					break regset
 				}
 			}
 		}

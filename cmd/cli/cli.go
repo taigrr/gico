@@ -14,11 +14,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	freq, err := repoPaths.Frequency(n.Year(), []string{""})
+	freq, err := repoPaths.Frequency(n.Year(), []string{"Groot"})
 	if err != nil {
 		panic(err)
 	}
-	wfreq, err := repoPaths.GetWeekFreq([]string{""})
+	wfreq, err := repoPaths.GetWeekFreq([]string{"Groot"})
 	if err != nil {
 		panic(err)
 	}
@@ -29,4 +29,5 @@ func main() {
 	fmt.Println()
 	fmt.Println("year:")
 	fmt.Println(term.GetYearUnicode(freq))
+	fmt.Println((freq))
 }

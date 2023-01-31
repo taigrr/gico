@@ -90,29 +90,8 @@ func (cs CommitSet) ToYearFreq() types.Freq {
 		yearLength++
 	}
 	freq := make([]int, yearLength)
-	data := types.NewDataSet()
-	for _, commit := range cs.Commits {
-		ts := commit.TimeStamp
-		roundedTS := ts.Round(time.Hour * 24)
-		wd, ok := data[roundedTS]
-		if !ok {
-			wd = types.WorkDay{}
-			wd.Commits = []types.Commit{}
-		}
-		wd.Commits = append(wd.Commits, commit)
-		wd.Count++
-		wd.Day = roundedTS
-		data[roundedTS] = wd
-	}
-	for k, v := range data {
-		if k.Year() != year {
-			continue
-		}
-		// this is equivalent to adding len(commits) to the freq total, but
-		// it's a stub for later when we do more here
-		for range v.Commits {
-			freq[k.YearDay()]++
-		}
+	for _, v := range cs.Commits {
+		freq[v.TimeStamp.YearDay()-1]++
 	}
 	return freq
 }
@@ -128,10 +107,11 @@ func (cs CommitSet) FilterByAuthorRegex(authors []string) (CommitSet, error) {
 	}
 	newCS := CommitSet{Year: cs.Year}
 	for _, commit := range cs.Commits {
+	regset:
 		for _, r := range regSet {
 			if r.MatchString(commit.Author) {
 				newCS.Commits = append(newCS.Commits, commit)
-				break
+				break regset
 			}
 		}
 	}
