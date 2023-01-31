@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -18,7 +17,6 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/weekly.svg", func(w http.ResponseWriter, r *http.Request) {
 		author := r.URL.Query().Get("author")
-		fmt.Println(author)
 		w.Header().Add("Content-Type", "text/html")
 		repoPaths, err := commits.GetMRRepos()
 		if err != nil {
@@ -28,7 +26,6 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(week)
 		svg := svg.GetWeekSVG(week)
 		svg.WriteTo(w)
 	})
@@ -36,7 +33,6 @@ func main() {
 		year := time.Now().Year()
 		yst := r.URL.Query().Get("year")
 		author := r.URL.Query().Get("author")
-		fmt.Println(author)
 		y, err := strconv.Atoi(yst)
 		if err == nil {
 			year = y
@@ -49,7 +45,6 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(freq)
 		svg := svg.GetYearSVG(freq)
 		w.Header().Add("Content-Type", "text/html")
 		svg.WriteTo(w)

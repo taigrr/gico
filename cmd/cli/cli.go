@@ -29,5 +29,4 @@ func main() {
 	fmt.Println()
 	fmt.Println("year:")
 	fmt.Println(term.GetYearUnicode(freq))
-	fmt.Println((freq))
 }
