@@ -21,7 +21,11 @@ func main() {
 		w.Header().Add("Content-Type", "text/html")
 		now := time.Now()
 		year := now.Year()
-		freq, err := commits.GlobalFrequencyChan(year, []string{author})
+		repoPaths, err := commits.GetMRRepos()
+		if err != nil {
+			panic(err)
+		}
+		freq, err := repoPaths.FrequencyChan(year, []string{author})
 		if err != nil {
 			panic(err)
 		}
@@ -29,7 +33,7 @@ func main() {
 		fmt.Println(today)
 		if today < 6 {
 			curYear := year - 1
-			curFreq, err := commits.GlobalFrequencyChan(curYear, []string{author})
+			curFreq, err := repoPaths.FrequencyChan(curYear, []string{author})
 			if err != nil {
 				panic(err)
 			}
@@ -53,7 +57,11 @@ func main() {
 		if err == nil {
 			year = y
 		}
-		freq, err := commits.GlobalFrequencyChan(year, []string{author})
+		repoPaths, err := commits.GetMRRepos()
+		if err != nil {
+			panic(err)
+		}
+		freq, err := repoPaths.FrequencyChan(year, []string{author})
 		if err != nil {
 			panic(err)
 		}

@@ -14,10 +14,10 @@ type (
 		Repo      string    `json:"repo,omitempty"`
 		Path      string    `json:"path,omitempty"`
 	}
-	DataSet     map[time.Time]WorkDay
-	YearFreq    []int
-	ExpYearFreq struct {
-		YearFreq YearFreq
+	DataSet map[time.Time]WorkDay
+	Freq    []int
+	ExpFreq struct {
+		YearFreq Freq
 		Created  time.Time
 	}
 	WorkDay struct {
