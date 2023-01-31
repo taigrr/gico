@@ -11,14 +11,6 @@ import (
 	"github.com/taigrr/mg/parse"
 )
 
-type (
-	Repo      git.Repository
-	CommitSet struct {
-		Commits []types.Commit
-		Year    int
-	}
-)
-
 func GlobalFrequencyChan(year int, authors []string) (types.YearFreq, error) {
 	yearLength := 365
 	if year%4 == 0 {

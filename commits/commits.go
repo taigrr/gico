@@ -1,8 +1,6 @@
 package commits
 
 import (
-	"errors"
-	"os"
 	"regexp"
 	"time"
 
@@ -11,14 +9,6 @@ import (
 
 	"github.com/taigrr/gico/types"
 	"github.com/taigrr/mg/parse"
-)
-
-type (
-	Repo      git.Repository
-	CommitSet struct {
-		Commits []types.Commit
-		Year    int
-	}
 )
 
 func GlobalFrequency(year int, authors []string) (types.YearFreq, error) {
@@ -50,18 +40,6 @@ func GlobalFrequency(year int, authors []string) (types.YearFreq, error) {
 		gfreq = gfreq.Merge(freq)
 	}
 	return gfreq, nil
-}
-
-func OpenRepo(directory string) (Repo, error) {
-	if s, err := os.Stat(directory); err != nil {
-		return Repo{}, err
-	} else {
-		if !s.IsDir() {
-			return Repo{}, errors.New("received path to non-directory for git repo")
-		}
-	}
-	r, err := git.PlainOpenWithOptions(directory, &(git.PlainOpenOptions{DetectDotGit: true}))
-	return Repo(*r), err
 }
 
 func (cs CommitSet) ToYearFreq() types.YearFreq {
