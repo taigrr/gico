@@ -24,6 +24,7 @@ func (paths RepoSet) FrequencyChan(year int, authors []string) (types.Freq, erro
 	for _, p := range paths {
 		wg.Add(1)
 		go func(path string) {
+			defer wg.Done()
 			repo, err := OpenRepo(path)
 			if err != nil {
 				return
@@ -40,7 +41,6 @@ func (paths RepoSet) FrequencyChan(year int, authors []string) (types.Freq, erro
 			for c := range cc {
 				outChan <- c
 			}
-			wg.Done()
 		}(p)
 	}
 	go func() {
