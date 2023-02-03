@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 	"time"
@@ -28,6 +29,26 @@ func main() {
 		}
 		svg := svg.GetWeekSVG(week)
 		svg.WriteTo(w)
+	})
+	r.HandleFunc("/stats.json", func(w http.ResponseWriter, r *http.Request) {
+		year := time.Now().Year()
+		yst := r.URL.Query().Get("year")
+		author := r.URL.Query().Get("author")
+		y, err := strconv.Atoi(yst)
+		if err == nil {
+			year = y
+		}
+		repoPaths, err := commits.GetMRRepos()
+		if err != nil {
+			panic(err)
+		}
+		freq, err := repoPaths.FrequencyChan(year, []string{author})
+		if err != nil {
+			panic(err)
+		}
+		b, _ := json.Marshal(freq)
+		w.Header().Add("Content-Type", "application/json")
+		w.Write(b)
 	})
 	r.HandleFunc("/yearly.svg", func(w http.ResponseWriter, r *http.Request) {
 		year := time.Now().Year()

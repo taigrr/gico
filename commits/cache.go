@@ -69,7 +69,7 @@ func CacheGraph(year int, authors, repoPaths []string, freq types.Freq) {
 	}
 	hashCache[year][a][r] = types.ExpFreq{YearFreq: freq, Created: time.Now()}
 	go func() {
-		time.Sleep(time.Minute * 15)
+		time.Sleep(time.Hour * 1)
 		mapTex.Lock()
 		defer mapTex.Unlock()
 		delete(hashCache[year][a], r)
