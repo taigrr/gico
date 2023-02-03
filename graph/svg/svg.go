@@ -36,7 +36,7 @@ func drawWeekImage(c []sc.SimpleColor, freq []int, shouldHighlight bool) bytes.B
 	var sb bytes.Buffer
 	sbw := bufio.NewWriter(&sb)
 	squareLength := 10
-	width := (len(c) + 1) * squareLength * 2
+	width := len(c)*squareLength*2 + squareLength
 	height := squareLength * 2
 	canvas := svg.New(sbw)
 	canvas.Start(width, height)
@@ -47,7 +47,7 @@ func drawWeekImage(c []sc.SimpleColor, freq []int, shouldHighlight bool) bytes.B
 				s = sc.FromHexString("#FF0000")
 			}
 		}
-		canvas.Square(squareLength*2*(i+1), squareLength/2, squareLength, fmt.Sprintf("fill:%s; value:%d", s.ToHex(), freq[i]))
+		canvas.Square(squareLength*2*(i)+squareLength, squareLength/2, squareLength, fmt.Sprintf("fill:%s; value:%d", s.ToHex(), freq[i]))
 	}
 	canvas.End()
 	sbw.Flush()
