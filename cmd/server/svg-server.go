@@ -3,9 +3,11 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 
 	"github.com/taigrr/gico/commits"
@@ -16,6 +18,10 @@ type DayCount [366]int
 
 func main() {
 	r := mux.NewRouter()
+	logger := func(h http.Handler) http.Handler {
+		return handlers.LoggingHandler(os.Stdout, h)
+	}
+	r.Use(mux.MiddlewareFunc(logger))
 	r.HandleFunc("/weekly.svg", func(w http.ResponseWriter, r *http.Request) {
 		author := r.URL.Query().Get("author")
 		highlight := r.URL.Query().Get("highlight")
@@ -79,5 +85,8 @@ func main() {
 		svg.WriteTo(w)
 	})
 
-	http.ListenAndServe(":8822", r)
+	err := http.ListenAndServe(":8822", r)
+	if err != nil {
+		panic(err)
+	}
 }
