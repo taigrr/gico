@@ -2,8 +2,8 @@ package common
 
 import (
 	"bytes"
+	"fmt"
 	"image/color"
-	"math"
 	"sync"
 
 	sc "github.com/taigrr/simplecolorpalettes/simplecolor"
@@ -35,6 +35,7 @@ func SetColorScheme(c []color.Color) {
 }
 
 func ColorForFrequency(freq, min, max int) sc.SimpleColor {
+	fmt.Printf("f: %d, min: %d, max: %d\n", freq, min, max)
 	if freq == 0 {
 		return sc.SimpleColor(0)
 	}
@@ -54,22 +55,18 @@ func ColorForFrequency(freq, min, max int) sc.SimpleColor {
 }
 
 func MinMax(f []int) (int, int) {
-	min, max := math.MaxInt, math.MinInt
+	max := 0
 	for _, x := range f {
-		if x == 0 {
-			continue
-		}
-		if x < min {
-			min = x
-		} else if x > max {
+		if x > max {
 			max = x
 		}
 	}
-	if min == math.MaxInt {
-		min = 0
+	min := max
+	for _, x := range f {
+		if x < min && x != 0 {
+			min = x
+		}
 	}
-	if max == math.MinInt {
-		max = 0
-	}
+
 	return min, max
 }

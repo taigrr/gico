@@ -26,6 +26,7 @@ var (
 func GetWeekSVG(frequencies []int, shouldHighlight bool) bytes.Buffer {
 	squareColors := []sc.SimpleColor{}
 	min, max := common.MinMax(frequencies)
+	fmt.Println(frequencies)
 	for _, f := range frequencies {
 		squareColors = append(squareColors, common.ColorForFrequency(f, min, max))
 	}
