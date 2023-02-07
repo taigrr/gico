@@ -7,12 +7,15 @@ import (
 type (
 	Month  string
 	Commit struct {
-		LOC       int       `json:"loc,omitempty"`
-		Message   string    `json:"message,omitempty"`
-		TimeStamp time.Time `json:"ts,omitempty"`
-		Author    string    `json:"author,omitempty"`
-		Repo      string    `json:"repo,omitempty"`
-		Path      string    `json:"path,omitempty"`
+		Deleted      int       `json:"deleted,omitempty"`
+		Added        int       `json:"added,omitempty"`
+		FilesChanged int       `json:"files_changed,omitempty"`
+		Message      string    `json:"message,omitempty"`
+		Hash         string    `json:"hash,omitempty"`
+		TimeStamp    time.Time `json:"ts,omitempty"`
+		Author       string    `json:"author,omitempty"`
+		Repo         string    `json:"repo,omitempty"`
+		Path         string    `json:"path,omitempty"`
 	}
 	DataSet map[time.Time]WorkDay
 	Freq    []int

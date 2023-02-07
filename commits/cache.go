@@ -14,10 +14,32 @@ import (
 var (
 	mapTex    sync.RWMutex
 	hashCache map[int]map[string]map[string]types.ExpFreq
+	// the Repo Cache holds a list of all commits from HEAD back to parent
+	// the key is the repo path
+	// if the hash of the first commit / HEAD commit doesn't match the current HEAD,
+	// then it can be discarded and reloaded
+	repoCache map[string][]types.Commit
 )
 
 func init() {
 	hashCache = make(map[int]map[string]map[string]types.ExpFreq)
+	repoCache = make(map[string][]types.Commit)
+}
+
+func IsRepoCached(path string, head string) bool {
+	mapTex.RLock()
+	defer mapTex.RUnlock()
+	if commits, ok := repoCache[path]; !ok {
+		return false
+	} else {
+		return len(commits) > 0 && commits[0].Hash == head
+	}
+}
+
+func CacheRepo(path string, commits []types.Commit) {
+	mapTex.Lock()
+	defer mapTex.Unlock()
+	repoCache[path] = commits
 }
 
 func hashSlice(in []string) string {
