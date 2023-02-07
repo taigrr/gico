@@ -87,7 +87,20 @@ func (repo Repo) GetCommitSet() (CommitSet, error) {
 	}
 	cIter.ForEach(func(c *object.Commit) error {
 		ts := c.Author.When
-		commit := types.Commit{Author: c.Author.Name, Message: c.Message, TimeStamp: ts}
+		commit := types.Commit{
+			Author:  c.Author.Name,
+			Message: c.Message, TimeStamp: ts,
+			Hash: c.Hash.String(), Repo: repo.Path,
+			FilesChanged: 0, Added: 0, Deleted: 0,
+		}
+		stats, err := c.Stats()
+		if err != nil {
+			for _, stat := range stats {
+				commit.Added += stat.Addition
+				commit.Deleted += stat.Deletion
+				commit.FilesChanged++
+			}
+		}
 		commits = append(commits, commit)
 		return nil
 	})
