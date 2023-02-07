@@ -2,7 +2,6 @@ package common
 
 import (
 	"bytes"
-	"fmt"
 	"image/color"
 	"sync"
 
@@ -35,7 +34,6 @@ func SetColorScheme(c []color.Color) {
 }
 
 func ColorForFrequency(freq, min, max int) sc.SimpleColor {
-	fmt.Printf("f: %d, min: %d, max: %d\n", freq, min, max)
 	if freq == 0 {
 		return sc.SimpleColor(0)
 	}

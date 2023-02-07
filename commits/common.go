@@ -5,9 +5,11 @@ import (
 	"os"
 
 	git "github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/config"
+
+	"github.com/taigrr/mg/parse"
 
 	"github.com/taigrr/gico/types"
-	"github.com/taigrr/mg/parse"
 )
 
 type (
@@ -41,4 +43,20 @@ func GetMRRepos() (RepoSet, error) {
 	}
 	paths := mrconf.GetRepoPaths()
 	return RepoSet(paths), nil
+}
+
+func GetAuthorName() (string, error) {
+	conf, err := config.LoadConfig(config.GlobalScope)
+	if err != nil {
+		return "", err
+	}
+	return conf.Author.Name, nil
+}
+
+func GetAuthorEmail() (string, error) {
+	conf, err := config.LoadConfig(config.GlobalScope)
+	if err != nil {
+		return "", err
+	}
+	return conf.Author.Email, nil
 }
