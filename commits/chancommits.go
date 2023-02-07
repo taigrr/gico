@@ -66,7 +66,7 @@ func YearFreqFromChan(cc chan types.Commit, year int) types.Freq {
 
 func (repo Repo) GetCommitChan() (chan types.Commit, error) {
 	cc := make(chan types.Commit, 30)
-	r := git.Repository(repo)
+	r := git.Repository(repo.Repo)
 	ref, err := r.Head()
 	if err != nil {
 		return cc, err

@@ -26,6 +26,23 @@ func init() {
 	repoCache = make(map[string][]types.Commit)
 }
 
+func CacheRepo(path string, commits []types.Commit) {
+	mapTex.Lock()
+	defer mapTex.Unlock()
+	repoCache[path] = commits
+}
+
+func GetCachedRepo(path string, head string) ([]types.Commit, bool) {
+	mapTex.RLock()
+	defer mapTex.RUnlock()
+	if commits, ok := repoCache[path]; !ok {
+		return []types.Commit{}, false
+	} else if len(commits) > 0 && commits[0].Hash == head {
+		return commits, true
+	}
+	return []types.Commit{}, false
+}
+
 func IsRepoCached(path string, head string) bool {
 	mapTex.RLock()
 	defer mapTex.RUnlock()
@@ -34,12 +51,6 @@ func IsRepoCached(path string, head string) bool {
 	} else {
 		return len(commits) > 0 && commits[0].Hash == head
 	}
-}
-
-func CacheRepo(path string, commits []types.Commit) {
-	mapTex.Lock()
-	defer mapTex.Unlock()
-	repoCache[path] = commits
 }
 
 func hashSlice(in []string) string {

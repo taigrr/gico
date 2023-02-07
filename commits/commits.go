@@ -61,13 +61,25 @@ func (paths RepoSet) Frequency(year int, authors []string) (types.Freq, error) {
 	return gfreq, nil
 }
 
+func (repo Repo) GetHead() (string, error) {
+	r := git.Repository(repo.Repo)
+	ref, err := r.Head()
+	if err != nil {
+		return "", err
+	}
+	return ref.String(), nil
+}
+
 func (repo Repo) GetCommitSet() (CommitSet, error) {
 	cs := CommitSet{}
 	commits := []types.Commit{}
-	r := git.Repository(repo)
+	r := git.Repository(repo.Repo)
 	ref, err := r.Head()
 	if err != nil {
 		return cs, err
+	}
+	if cachedRepo, ok := GetCachedRepo(repo.Path, ref.String()); ok {
+		return CommitSet{Commits: cachedRepo}, nil
 	}
 	cIter, err := r.Log(&git.LogOptions{From: ref.Hash()})
 	if err != nil {
@@ -80,6 +92,7 @@ func (repo Repo) GetCommitSet() (CommitSet, error) {
 		return nil
 	})
 	cs.Commits = commits
+	CacheRepo(repo.Path, cs.Commits)
 	return cs, nil
 }
 

@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/taigrr/gico/types"
 	"github.com/taigrr/gico/ui"
@@ -41,15 +40,6 @@ func main() {
 
 func NewDataSet() types.DataSet {
 	return make(types.DataSet)
-}
-
-func NewCommit(Author, Message, Repo, Path string, LOC int) types.Commit {
-	ci := types.Commit{
-		Message: Message,
-		Author:  Author, LOC: LOC, TimeStamp: time.Now(),
-		Repo: Repo, Path: Path,
-	}
-	return ci
 }
 
 func loadRepo() {

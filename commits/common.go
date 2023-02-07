@@ -11,7 +11,10 @@ import (
 )
 
 type (
-	Repo      git.Repository
+	Repo struct {
+		Repo git.Repository
+		Path string
+	}
 	CommitSet struct {
 		Commits []types.Commit
 		Year    int
@@ -28,7 +31,7 @@ func OpenRepo(directory string) (Repo, error) {
 		}
 	}
 	r, err := git.PlainOpenWithOptions(directory, &(git.PlainOpenOptions{DetectDotGit: true}))
-	return Repo(*r), err
+	return Repo{Repo: *r, Path: directory}, err
 }
 
 func GetMRRepos() (RepoSet, error) {
