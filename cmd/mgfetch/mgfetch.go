@@ -25,7 +25,7 @@ func main() {
 		fmt.Println("found no repos!")
 		os.Exit(1)
 	}
-	gfreq, err := mr.Frequency(year, authors)
+	gfreq, err := mr.FrequencyChan(year, authors)
 	if err != nil {
 		panic(err)
 	}
