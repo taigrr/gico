@@ -14,7 +14,9 @@ type Repo git.Repository
 
 func main() {
 	year := time.Now().Year()
-	authors := []string{"Groot"}
+	aName, _ := commits.GetAuthorName()
+	aEmail, _ := commits.GetAuthorEmail()
+	authors := []string{aName, aEmail}
 	mr, err := commits.GetMRRepos()
 	if err != nil {
 		panic(err)
@@ -23,7 +25,7 @@ func main() {
 		fmt.Println("found no repos!")
 		os.Exit(1)
 	}
-	gfreq, err := mr.FrequencyChan(year, authors)
+	gfreq, err := mr.Frequency(year, authors)
 	if err != nil {
 		panic(err)
 	}

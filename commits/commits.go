@@ -1,6 +1,7 @@
 package commits
 
 import (
+	"log"
 	"regexp"
 	"time"
 
@@ -48,7 +49,7 @@ func (paths RepoSet) Frequency(year int, authors []string) (types.Freq, error) {
 		}
 		commits, err := repo.GetCommitSet()
 		if err != nil {
-			return types.Freq{}, err
+			log.Printf("skipping repo %s\n", repo.Path)
 		}
 		commits = commits.FilterByYear(year)
 		commits, err = commits.FilterByAuthorRegex(authors)
@@ -93,14 +94,15 @@ func (repo Repo) GetCommitSet() (CommitSet, error) {
 			Hash: c.Hash.String(), Repo: repo.Path,
 			FilesChanged: 0, Added: 0, Deleted: 0,
 		}
-		stats, err := c.Stats()
-		if err != nil {
-			for _, stat := range stats {
-				commit.Added += stat.Addition
-				commit.Deleted += stat.Deletion
-				commit.FilesChanged++
-			}
-		}
+		// this is too slow for now, so skipping
+		//		stats, err := c.Stats()
+		//		if err != nil {
+		//			for _, stat := range stats {
+		//				commit.Added += stat.Addition
+		//				commit.Deleted += stat.Deletion
+		//				commit.FilesChanged++
+		//			}
+		//		}
 		commits = append(commits, commit)
 		return nil
 	})

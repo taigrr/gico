@@ -1,6 +1,7 @@
 package commits
 
 import (
+	"fmt"
 	"regexp"
 	"sync"
 
@@ -60,6 +61,7 @@ func YearFreqFromChan(cc chan types.Commit, year int) types.Freq {
 	freq := make([]int, yearLength)
 	for commit := range cc {
 		freq[commit.TimeStamp.YearDay()-1]++
+		fmt.Println(commit)
 	}
 	return freq
 }
@@ -69,10 +71,12 @@ func (repo Repo) GetCommitChan() (chan types.Commit, error) {
 	r := git.Repository(repo.Repo)
 	ref, err := r.Head()
 	if err != nil {
+		close(cc)
 		return cc, err
 	}
 	cIter, err := r.Log(&git.LogOptions{From: ref.Hash()})
 	if err != nil {
+		close(cc)
 		return cc, err
 	}
 	go func() {
@@ -84,14 +88,15 @@ func (repo Repo) GetCommitChan() (chan types.Commit, error) {
 				Hash: c.Hash.String(), Repo: repo.Path,
 				FilesChanged: 0, Added: 0, Deleted: 0,
 			}
-			stats, err := c.Stats()
-			if err != nil {
-				for _, stat := range stats {
-					commit.Added += stat.Addition
-					commit.Deleted += stat.Deletion
-					commit.FilesChanged++
-				}
-			}
+			// Too slow, commenting for now
+			//			stats, err := c.Stats()
+			//			if err != nil {
+			//				for _, stat := range stats {
+			//					commit.Added += stat.Addition
+			//					commit.Deleted += stat.Deletion
+			//					commit.FilesChanged++
+			//				}
+			//			}
 			cc <- commit
 			return nil
 		})
