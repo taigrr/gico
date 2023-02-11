@@ -39,9 +39,11 @@ func xmain() {
 type errMsg error
 
 type model struct {
-	spinner  spinner.Model
-	quitting bool
-	err      error
+	SettingsModel any
+	GraphModel    any
+	CommitModel   any
+	quitting      bool
+	err           error
 }
 
 var quitKeys = key.NewBinding(
