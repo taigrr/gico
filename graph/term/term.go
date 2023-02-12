@@ -42,6 +42,15 @@ func drawWeekUnicode(c []sc.SimpleColor) string {
 	return s.String()
 }
 
+func GetYearUnicodeSelected(frequencies []int, selected int) string {
+	squareColors := []sc.SimpleColor{}
+	min, max := common.MinMax(frequencies)
+	for _, f := range frequencies {
+		squareColors = append(squareColors, common.ColorForFrequency(f, min, max))
+	}
+	return drawYearUnicodeSelected(squareColors, selected)
+}
+
 func GetYearUnicode(frequencies []int) string {
 	squareColors := []sc.SimpleColor{}
 	min, max := common.MinMax(frequencies)
@@ -49,6 +58,36 @@ func GetYearUnicode(frequencies []int) string {
 		squareColors = append(squareColors, common.ColorForFrequency(f, min, max))
 	}
 	return drawYearUnicode(squareColors)
+}
+
+func drawYearUnicodeSelected(c []sc.SimpleColor, selected int) string {
+	// o := termenv.NewOutput(os.Stdout)
+	var s strings.Builder
+	o := termenv.NewOutput(os.Stdout, termenv.WithProfile(termenv.TrueColor))
+	weekRows := [7][]sc.SimpleColor{{}}
+	for i := 0; i < 7; i++ {
+		weekRows[i] = []sc.SimpleColor{}
+	}
+	for i := 0; i < len(c); i++ {
+		weekRows[i%7] = append(weekRows[i%7], c[i])
+	}
+	for i, row := range weekRows {
+		for w, d := range row {
+			style := o.String(block).Foreground(termenv.TrueColor.Color(d.ToHex()))
+			if w*7+i == selected {
+				style = o.String(block).Foreground(termenv.TrueColor.Color("#FFFFFF"))
+				//			style = style.Background(termenv.TrueColor.Color("#FF0000"))
+			}
+			s.WriteString(style.String())
+			if w == len(row)-1 {
+				s.WriteString("\n")
+			} else {
+				s.WriteString(" ")
+			}
+
+		}
+	}
+	return s.String()
 }
 
 func drawYearUnicode(c []sc.SimpleColor) string {

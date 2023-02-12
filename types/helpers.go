@@ -19,6 +19,10 @@ func NewCommit(Author, Message, Repo, Path string, Added, Deleted, FilesChanged 
 	return ci
 }
 
+func (yf Freq) StringSelected(selected int) string {
+	return gterm.GetYearUnicodeSelected(yf, selected)
+}
+
 func (yf Freq) String() string {
 	return gterm.GetYearUnicode(yf)
 }
