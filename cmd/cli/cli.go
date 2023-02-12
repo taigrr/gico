@@ -6,9 +6,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/bubbles/key"
-	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/taigrr/gico/commits"
 	"github.com/taigrr/gico/graph/term"
 )
@@ -52,14 +50,11 @@ var quitKeys = key.NewBinding(
 )
 
 func initialModel() model {
-	s := spinner.New()
-	s.Spinner = spinner.Dot
-	s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
-	return model{spinner: s}
+	return model{}
 }
 
 func (m model) Init() tea.Cmd {
-	return m.spinner.Tick
+	return nil
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -78,7 +73,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	default:
 		var cmd tea.Cmd
-		m.spinner, cmd = m.spinner.Update(msg)
 		return m, cmd
 	}
 }
@@ -87,11 +81,10 @@ func (m model) View() string {
 	if m.err != nil {
 		return m.err.Error()
 	}
-	str := fmt.Sprintf("\n\n   %s Loading forever... %s\n\n", m.spinner.View(), quitKeys.Help().Desc)
 	if m.quitting {
-		return str + "\n"
+		return "\n"
 	}
-	return str
+	return ""
 }
 
 func main() {
