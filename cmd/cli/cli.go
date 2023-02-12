@@ -37,11 +37,25 @@ func xmain() {
 type errMsg error
 
 type model struct {
-	SettingsModel any
-	GraphModel    any
-	CommitModel   any
-	quitting      bool
-	err           error
+	SettingsModel  Settings
+	GraphModel     Graph
+	CommitLogModel CommitLog
+	HelpModel      Help
+	quitting       bool
+	err            error
+}
+
+type Help struct{}
+
+type CommitLog struct{}
+
+type Settings struct{}
+
+type Graph struct {
+	Selected int
+	Year     int
+	Repos    []string
+	Authors  []string
 }
 
 var quitKeys = key.NewBinding(
@@ -49,12 +63,87 @@ var quitKeys = key.NewBinding(
 	key.WithHelp("", "press q to quit"),
 )
 
-func initialModel() model {
-	return model{}
+func initialModel() (model, error) {
+	var m model
+	var err error
+	m.GraphModel, err = NewGraph()
+	if err != nil {
+		return m, err
+	}
+	return m, nil
 }
 
 func (m model) Init() tea.Cmd {
 	return nil
+}
+
+func (m Settings) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	return m, nil
+}
+
+func (m Settings) Init() tea.Cmd {
+	return nil
+}
+
+func (m Settings) View() string {
+	return ""
+}
+
+func (m CommitLog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	return m, nil
+}
+
+func (m CommitLog) Init() tea.Cmd {
+	return nil
+}
+
+func (m CommitLog) View() string {
+	return ""
+}
+
+func (m Graph) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.Key:
+		switch msg.String() {
+		case "up":
+		case "left":
+			if m.Selected > 6 {
+				m.Selected -= 7
+			} else {
+				// TODO calculate the square for this day last year
+			}
+		}
+	}
+	return m, nil
+}
+
+func NewGraph() (Graph, error) {
+	var m Graph
+	now := time.Now()
+	today := now.YearDay()
+	year := now.Year()
+	aName, _ := commits.GetAuthorName()
+	aEmail, _ := commits.GetAuthorEmail()
+	authors := []string{aName, aEmail}
+	mr, err := commits.GetMRRepos()
+	if err != nil {
+		return m, err
+	}
+	m.Repos = mr
+	m.Authors = authors
+	m.Year = year
+	m.Selected = today
+	return m, nil
+}
+
+func (m Graph) Init() tea.Cmd {
+	return nil
+}
+
+func (m Graph) View() string {
+	mr := commits.RepoSet(m.Repos)
+	gfreq, _ := mr.FrequencyChan(m.Year, m.Authors)
+	return gfreq.String()
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -84,11 +173,15 @@ func (m model) View() string {
 	if m.quitting {
 		return "\n"
 	}
-	return ""
+	return m.GraphModel.View()
 }
 
 func main() {
-	p := tea.NewProgram(initialModel())
+	m, err := initialModel()
+	if err != nil {
+		panic(err)
+	}
+	p := tea.NewProgram(m)
 	if _, err := p.Run(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)

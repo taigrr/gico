@@ -1,7 +1,6 @@
 package commits
 
 import (
-	"fmt"
 	"regexp"
 	"sync"
 
@@ -61,7 +60,6 @@ func YearFreqFromChan(cc chan types.Commit, year int) types.Freq {
 	freq := make([]int, yearLength)
 	for commit := range cc {
 		freq[commit.TimeStamp.YearDay()-1]++
-		fmt.Println(commit)
 	}
 	return freq
 }
