@@ -5,8 +5,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/taigrr/gico/commits"
 )
 
@@ -16,13 +18,12 @@ type model struct {
 	SettingsModel  Settings
 	GraphModel     Graph
 	CommitLogModel CommitLog
-	HelpModel      Help
+	HelpModel      help.Model
+	Bindings       []key.Binding
 	quitting       bool
 	cursor         Cursor
 	err            error
 }
-
-type Help struct{}
 
 type CommitLog struct{}
 
@@ -35,9 +36,15 @@ type Graph struct {
 	Authors  []string
 }
 
-var quitKeys = key.NewBinding(
-	key.WithKeys("q", "esc", "ctrl+c"),
-	key.WithHelp("", "press q to quit"),
+var (
+	quitKeys = key.NewBinding(
+		key.WithKeys("q", "esc", "ctrl+c"),
+		key.WithHelp("", "press q to quit"),
+	)
+	settingsKey = key.NewBinding(
+		key.WithKeys("ctrl+g"),
+		key.WithHelp("", "press ctrl+g to open settings"),
+	)
 )
 
 const (
@@ -56,6 +63,8 @@ func initialModel() (model, error) {
 		return m, err
 	}
 	m.cursor = graph
+	m.HelpModel = help.New()
+	m.Bindings = []key.Binding{quitKeys, settingsKey}
 	return m, nil
 }
 
@@ -72,7 +81,7 @@ func (m Settings) Init() tea.Cmd {
 }
 
 func (m Settings) View() string {
-	return ""
+	return "This is the settings view"
 }
 
 func (m CommitLog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -84,10 +93,20 @@ func (m CommitLog) Init() tea.Cmd {
 }
 
 func (m CommitLog) View() string {
-	return ""
+	return "This is the Commit Log"
+}
+
+func YearLen(year int) int {
+	yearLen := 365
+	if year%4 == 0 {
+		yearLen++
+	}
+	return yearLen
 }
 
 func (m Graph) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	yearLen := YearLen(m.Year)
+	prevYearLen := YearLen(m.Year - 1)
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -104,12 +123,25 @@ func (m Graph) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.Selected -= 7
 			} else {
 				// TODO calculate the square for this day last year
+				m.Selected -= 7
+				m.Selected += prevYearLen
+				m.Year--
+				go func() {
+					mr := commits.RepoSet(m.Repos)
+					mr.FrequencyChan(m.Year-1, m.Authors)
+				}()
 			}
 		case "right":
-			if m.Selected < 358 {
+			if m.Selected < yearLen-7 {
 				m.Selected += 7
 			} else {
-				// TODO
+				m.Selected += 7
+				m.Selected -= yearLen
+				m.Year++
+				go func() {
+					mr := commits.RepoSet(m.Repos)
+					mr.FrequencyChan(m.Year+1, m.Authors)
+				}()
 			}
 		}
 	}
@@ -139,6 +171,7 @@ func (m Graph) Init() tea.Cmd {
 	go func() {
 		mr := commits.RepoSet(m.Repos)
 		mr.FrequencyChan(m.Year-1, m.Authors)
+		mr.FrequencyChan(m.Year+1, m.Authors)
 	}()
 	return nil
 }
@@ -153,6 +186,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch cmd := msg.(type) {
 
 	case tea.KeyMsg:
+		if key.Matches(cmd, settingsKey) {
+			switch m.cursor {
+			case settings:
+				m.cursor = graph
+			default:
+				m.cursor = settings
+			}
+		}
 		if key.Matches(cmd, quitKeys) {
 			m.quitting = true
 			return m, tea.Quit
@@ -179,7 +220,8 @@ func (m model) View() string {
 	if m.quitting {
 		return ""
 	}
-	return m.GraphModel.View()
+	return lipgloss.JoinVertical(lipgloss.Top, m.GraphModel.View(), m.CommitLogModel.View(), m.HelpModel.ShortHelpView(m.Bindings))
+	// return m.GraphModel.View()
 }
 
 func main() {
