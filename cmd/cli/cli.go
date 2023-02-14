@@ -10,6 +10,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/taigrr/gico/commits"
+	"github.com/taigrr/gico/types"
 )
 
 type errMsg error
@@ -25,7 +26,14 @@ type model struct {
 	err            error
 }
 
-type CommitLog struct{}
+type CommitLog struct {
+	Year     int
+	YearDay  int
+	Commits  []types.Commit
+	Selected int
+	Authors  []string
+	Repos    []string
+}
 
 type Settings struct{}
 
@@ -62,6 +70,10 @@ func initialModel() (model, error) {
 	if err != nil {
 		return m, err
 	}
+	m.CommitLogModel, err := NewCommitLog()
+	if err != nil {
+		return m, err
+	}
 	m.cursor = graph
 	m.HelpModel = help.New()
 	m.Bindings = []key.Binding{quitKeys, settingsKey}
@@ -81,10 +93,23 @@ func (m Settings) Init() tea.Cmd {
 }
 
 func (m Settings) View() string {
-	return "This is the settings view"
+	return fmt.Sprintf("This is the settings view")
 }
 
 func (m CommitLog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch msg.String() {
+		case "j":
+			if m.Selected < len(m.Commits)-1 {
+				m.Selected++
+			}
+		case "k":
+			if m.Selected > 0 {
+				m.Selected--
+			}
+		}
+	}
 	return m, nil
 }
 
@@ -93,7 +118,7 @@ func (m CommitLog) Init() tea.Cmd {
 }
 
 func (m CommitLog) View() string {
-	return "This is the Commit Log"
+	return fmt.Sprintf("This is the Commit Log, selected %v", m)
 }
 
 func YearLen(year int) int {
@@ -145,6 +170,25 @@ func (m Graph) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 	}
+	return m, nil
+}
+func NewCommitLog() (CommitLog, error) {
+	var m CommitLog
+	now := time.Now()
+	today := now.YearDay() - 1
+	year := now.Year()
+	aName, _ := commits.GetAuthorName()
+	aEmail, _ := commits.GetAuthorEmail()
+	authors := []string{aName, aEmail}
+	mr, err := commits.GetMRRepos()
+	if err != nil {
+		return m, err
+	}
+	m.Repos = mr
+	m.Authors = authors
+	m.Year = year
+	m.Selected = today
+	m.Commits = mr.GetDayCommits(m.Year, m.Selected, m.Authors)
 	return m, nil
 }
 
@@ -205,9 +249,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	default:
 	}
 	switch m.cursor {
-	case graph:
-		tmp, cmd := m.GraphModel.Update(msg)
+		// multiple cursors defined for extensibility, but only graph is used
+	case graph, commitLog:
+		tmp, _ := m.GraphModel.Update(msg)
 		m.GraphModel, _ = tmp.(Graph)
+		tmpC, cmd := m.CommitLogModel.Update(msg)
+		m.CommitLogModel, _ = tmpC.(CommitLog)
+		return m, cmd
+	case settings:
+		tmp, cmd := m.SettingsModel.Update(msg)
+		m.SettingsModel, _ = tmp.(Settings)
 		return m, cmd
 	}
 	return m, nil
@@ -221,7 +272,6 @@ func (m model) View() string {
 		return ""
 	}
 	return lipgloss.JoinVertical(lipgloss.Top, m.GraphModel.View(), m.CommitLogModel.View(), m.HelpModel.ShortHelpView(m.Bindings))
-	// return m.GraphModel.View()
 }
 
 func main() {
