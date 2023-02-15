@@ -107,7 +107,7 @@ func (repo Repo) GetCommitSet() (CommitSet, error) {
 		return nil
 	})
 	cs.Commits = commits
-	CacheRepo(repo.Path, cs.Commits)
+	// CacheRepo(repo.Path, cs.Commits)
 	return cs, nil
 }
 

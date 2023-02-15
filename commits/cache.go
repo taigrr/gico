@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	mapTex    sync.RWMutex
-	hashCache map[int]map[string]map[string]types.ExpFreq
+	mapTex        sync.RWMutex
+	freqHashCache map[int]map[string]map[string]types.ExpFreq
+	repoHashCache map[int]map[string]map[string]types.ExpRepo
 	// the Repo Cache holds a list of all commits from HEAD back to parent
 	// the key is the repo path
 	// if the hash of the first commit / HEAD commit doesn't match the current HEAD,
@@ -22,14 +23,8 @@ var (
 )
 
 func init() {
-	hashCache = make(map[int]map[string]map[string]types.ExpFreq)
+	freqHashCache = make(map[int]map[string]map[string]types.ExpFreq)
 	repoCache = make(map[string][]types.Commit)
-}
-
-func CacheRepo(path string, commits []types.Commit) {
-	mapTex.Lock()
-	defer mapTex.Unlock()
-	repoCache[path] = commits
 }
 
 func GetCachedRepo(path string, head string) ([]types.Commit, bool) {
@@ -70,7 +65,7 @@ func GetCachedGraph(year int, authors []string, repoPaths []string) (types.Freq,
 	r := hashSlice(repoPaths)
 	mapTex.RLock()
 	defer mapTex.RUnlock()
-	if m1, ok := hashCache[year]; !ok {
+	if m1, ok := freqHashCache[year]; !ok {
 		return types.Freq{}, false
 	} else {
 		if m2, ok := m1[a]; !ok {
@@ -89,22 +84,42 @@ func GetCachedGraph(year int, authors []string, repoPaths []string) (types.Freq,
 	}
 }
 
+func CacheRepo(year int, authors, repoPaths []string, commits []types.Commit) {
+	a := hashSlice(authors)
+	r := hashSlice(repoPaths)
+	mapTex.Lock()
+	defer mapTex.Unlock()
+	if _, ok := repoHashCache[year]; !ok {
+		repoHashCache[year] = make(map[string]map[string]types.ExpRepo)
+	}
+	if _, ok := repoHashCache[year][a]; !ok {
+		repoHashCache[year][a] = make(map[string]types.ExpRepo)
+	}
+	repoHashCache[year][a][r] = types.ExpRepo{Commits: commits, Created: time.Now()}
+	go func() {
+		time.Sleep(time.Hour * 1)
+		mapTex.Lock()
+		defer mapTex.Unlock()
+		delete(repoHashCache[year][a], r)
+	}()
+}
+
 func CacheGraph(year int, authors, repoPaths []string, freq types.Freq) {
 	a := hashSlice(authors)
 	r := hashSlice(repoPaths)
 	mapTex.Lock()
 	defer mapTex.Unlock()
-	if _, ok := hashCache[year]; !ok {
-		hashCache[year] = make(map[string]map[string]types.ExpFreq)
+	if _, ok := freqHashCache[year]; !ok {
+		freqHashCache[year] = make(map[string]map[string]types.ExpFreq)
 	}
-	if _, ok := hashCache[year][a]; !ok {
-		hashCache[year][a] = make(map[string]types.ExpFreq)
+	if _, ok := freqHashCache[year][a]; !ok {
+		freqHashCache[year][a] = make(map[string]types.ExpFreq)
 	}
-	hashCache[year][a][r] = types.ExpFreq{YearFreq: freq, Created: time.Now()}
+	freqHashCache[year][a][r] = types.ExpFreq{YearFreq: freq, Created: time.Now()}
 	go func() {
 		time.Sleep(time.Hour * 1)
 		mapTex.Lock()
 		defer mapTex.Unlock()
-		delete(hashCache[year][a], r)
+		delete(freqHashCache[year][a], r)
 	}()
 }

@@ -29,7 +29,7 @@ type model struct {
 type CommitLog struct {
 	Year     int
 	YearDay  int
-	Commits  []types.Commit
+	Commits  [][]types.Commit
 	Selected int
 	Authors  []string
 	Repos    []string
@@ -70,7 +70,7 @@ func initialModel() (model, error) {
 	if err != nil {
 		return m, err
 	}
-	m.CommitLogModel, err := NewCommitLog()
+	m.CommitLogModel, err = NewCommitLog()
 	if err != nil {
 		return m, err
 	}
@@ -172,6 +172,7 @@ func (m Graph) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 	return m, nil
 }
+
 func NewCommitLog() (CommitLog, error) {
 	var m CommitLog
 	now := time.Now()
@@ -188,8 +189,8 @@ func NewCommitLog() (CommitLog, error) {
 	m.Authors = authors
 	m.Year = year
 	m.Selected = today
-	m.Commits = mr.GetDayCommits(m.Year, m.Selected, m.Authors)
-	return m, nil
+	m.Commits, err = mr.GetRepoCommits(m.Year, m.Authors)
+	return m, err
 }
 
 func NewGraph() (Graph, error) {
@@ -249,7 +250,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	default:
 	}
 	switch m.cursor {
-		// multiple cursors defined for extensibility, but only graph is used
+	// multiple cursors defined for extensibility, but only graph is used
 	case graph, commitLog:
 		tmp, _ := m.GraphModel.Update(msg)
 		m.GraphModel, _ = tmp.(Graph)

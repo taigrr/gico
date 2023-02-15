@@ -23,6 +23,11 @@ type (
 		YearFreq Freq
 		Created  time.Time
 	}
+
+	ExpRepo struct {
+		Commits []Commit
+		Created time.Time
+	}
 	WorkDay struct {
 		Day     time.Time `json:"day"`
 		Count   int       `json:"count"`

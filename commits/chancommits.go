@@ -10,7 +10,7 @@ import (
 	"github.com/taigrr/gico/types"
 )
 
-func (paths RepoSet) GetDayCommits(year int, authors []string) ([]types.Commit, error) {
+func (paths RepoSet) GetRepoCommits(year int, authors []string) ([][]types.Commit, error) {
 	yearLength := 365
 	if year%4 == 0 {
 		yearLength++
@@ -53,7 +53,7 @@ func (paths RepoSet) GetDayCommits(year int, authors []string) ([]types.Commit, 
 		close(outChan)
 	}()
 	freq := YearFreqFromChan(outChan, year)
-	//	CacheGraph(year, authors, paths, freq)
+	CacheGraph(year, authors, paths, freq)
 	return freq, nil
 }
 
@@ -94,6 +94,18 @@ func (paths RepoSet) FrequencyChan(year int, authors []string) (types.Freq, erro
 		wg.Wait()
 		close(outChan)
 	}()
+	yearLength := 365
+	if year%4 == 0 {
+		yearLength++
+	}
+	freq := make([][]types.Commit, yearLength)
+	for commit := range cc {
+		freq[commit.TimeStamp.YearDay()-1]++
+	}
+	return freq
+
+	for commit := range outChan {
+	}
 	freq := YearFreqFromChan(outChan, year)
 	CacheGraph(year, authors, paths, freq)
 	return freq, nil
