@@ -14,38 +14,18 @@ import (
 var (
 	mapTex        sync.RWMutex
 	freqHashCache map[int]map[string]map[string]types.ExpFreq
-	repoHashCache map[int]map[string]map[string]types.ExpRepo
+	repoHashCache map[int]map[string]map[string]types.ExpRepos
+	repoCache     = make(map[string]types.ExpRepo)
 	// the Repo Cache holds a list of all commits from HEAD back to parent
 	// the key is the repo path
 	// if the hash of the first commit / HEAD commit doesn't match the current HEAD,
 	// then it can be discarded and reloaded
-	repoCache map[string][]types.Commit
 )
 
 func init() {
 	freqHashCache = make(map[int]map[string]map[string]types.ExpFreq)
-	repoCache = make(map[string][]types.Commit)
-}
-
-func GetCachedRepo(path string, head string) ([]types.Commit, bool) {
-	mapTex.RLock()
-	defer mapTex.RUnlock()
-	if commits, ok := repoCache[path]; !ok {
-		return []types.Commit{}, false
-	} else if len(commits) > 0 && commits[0].Hash == head {
-		return commits, true
-	}
-	return []types.Commit{}, false
-}
-
-func IsRepoCached(path string, head string) bool {
-	mapTex.RLock()
-	defer mapTex.RUnlock()
-	if commits, ok := repoCache[path]; !ok {
-		return false
-	} else {
-		return len(commits) > 0 && commits[0].Hash == head
-	}
+	repoHashCache = make(map[int]map[string]map[string]types.ExpRepos)
+	repoCache = make(map[string]types.ExpRepo)
 }
 
 func hashSlice(in []string) string {
@@ -84,18 +64,65 @@ func GetCachedGraph(year int, authors []string, repoPaths []string) (types.Freq,
 	}
 }
 
-func CacheRepo(year int, authors, repoPaths []string, commits []types.Commit) {
+func GetCachedRepo(path string, head string) ([]types.Commit, bool) {
+	mapTex.RLock()
+	defer mapTex.RUnlock()
+	if commits, ok := repoCache[path]; !ok {
+		return []types.Commit{}, false
+	} else if len(commits.Commits) > 0 && commits.Commits[0].Hash == head {
+		return commits.Commits, true
+	}
+	return []types.Commit{}, false
+}
+
+func CacheRepo(path string, commits []types.Commit) {
+	mapTex.Lock()
+	defer mapTex.Unlock()
+	repoCache[path] = types.ExpRepo{Commits: commits, Created: time.Now()}
+	go func() {
+		time.Sleep(time.Hour * 1)
+		mapTex.Lock()
+		defer mapTex.Unlock()
+		delete(repoCache, path)
+	}()
+}
+
+func GetCachedRepos(year int, authors, repoPaths []string) ([][]types.Commit, bool) {
+	a := hashSlice(authors)
+	r := hashSlice(repoPaths)
+	mapTex.RLock()
+	defer mapTex.RUnlock()
+	if m1, ok := repoHashCache[year]; !ok {
+		return [][]types.Commit{{}}, false
+	} else {
+		if m2, ok := m1[a]; !ok {
+			return [][]types.Commit{{}}, false
+		} else {
+			if commits, ok := m2[r]; !ok {
+				return [][]types.Commit{{}}, false
+			} else {
+				if commits.Created.Before(time.Now().Add(-15 * time.Minute)) {
+					return [][]types.Commit{{}}, false
+				} else {
+					return commits.Commits, true
+				}
+			}
+		}
+	}
+}
+
+func CacheRepos(year int, authors, repoPaths []string, commits [][]types.Commit) {
 	a := hashSlice(authors)
 	r := hashSlice(repoPaths)
 	mapTex.Lock()
 	defer mapTex.Unlock()
 	if _, ok := repoHashCache[year]; !ok {
-		repoHashCache[year] = make(map[string]map[string]types.ExpRepo)
+		repoHashCache[year] = make(map[string]map[string]types.ExpRepos)
 	}
 	if _, ok := repoHashCache[year][a]; !ok {
-		repoHashCache[year][a] = make(map[string]types.ExpRepo)
+		repoHashCache[year][a] = make(map[string]types.ExpRepos)
 	}
-	repoHashCache[year][a][r] = types.ExpRepo{Commits: commits, Created: time.Now()}
+	repoHashCache[year][a][r] = types.ExpRepos{Commits: commits, Created: time.Now()}
 	go func() {
 		time.Sleep(time.Hour * 1)
 		mapTex.Lock()

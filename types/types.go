@@ -23,7 +23,10 @@ type (
 		YearFreq Freq
 		Created  time.Time
 	}
-
+	ExpRepos struct {
+		Commits [][]Commit
+		Created time.Time
+	}
 	ExpRepo struct {
 		Commits []Commit
 		Created time.Time

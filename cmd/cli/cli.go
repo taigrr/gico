@@ -70,7 +70,7 @@ func initialModel() (model, error) {
 	if err != nil {
 		return m, err
 	}
-	m.CommitLogModel, err = NewCommitLog()
+	// m.CommitLogModel, err = NewCommitLog()
 	if err != nil {
 		return m, err
 	}
@@ -93,7 +93,7 @@ func (m Settings) Init() tea.Cmd {
 }
 
 func (m Settings) View() string {
-	return fmt.Sprintf("This is the settings view")
+	return fmt.Sprintf("This is the settings view %s", "fmt")
 }
 
 func (m CommitLog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -108,6 +108,8 @@ func (m CommitLog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.Selected > 0 {
 				m.Selected--
 			}
+		default:
+			//		m.Commits = commits.CommitSet
 		}
 	}
 	return m, nil
@@ -118,7 +120,11 @@ func (m CommitLog) Init() tea.Cmd {
 }
 
 func (m CommitLog) View() string {
-	return fmt.Sprintf("This is the Commit Log, selected %v", m)
+	if len(m.Commits) == 0 {
+		return "No commits to display"
+	}
+	return fmt.Sprintf("%v", m.Commits[m.YearDay])
+	// return fmt.Sprintf("This is the Commit Log, selected %v", "sd")
 }
 
 func YearLen(year int) int {
@@ -256,6 +262,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.GraphModel, _ = tmp.(Graph)
 		tmpC, cmd := m.CommitLogModel.Update(msg)
 		m.CommitLogModel, _ = tmpC.(CommitLog)
+		m.CommitLogModel.YearDay = m.GraphModel.Selected
 		return m, cmd
 	case settings:
 		tmp, cmd := m.SettingsModel.Update(msg)

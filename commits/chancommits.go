@@ -20,10 +20,10 @@ func (paths RepoSet) GetRepoCommits(year int, authors []string) ([][]types.Commi
 	for i := 0; i < yearLength; i++ {
 		commits[i] = []types.Commit{}
 	}
-	//	cache, ok := GetCachedCommits(year, authors, paths)
-	//	if ok {
-	// return cache, nil
-	//	}
+	cache, ok := GetCachedRepos(year, authors, paths)
+	if ok {
+		return cache, nil
+	}
 	outChan := make(chan types.Commit, 10)
 	var wg sync.WaitGroup
 	for _, p := range paths {
@@ -52,9 +52,12 @@ func (paths RepoSet) GetRepoCommits(year int, authors []string) ([][]types.Commi
 		wg.Wait()
 		close(outChan)
 	}()
-	freq := YearFreqFromChan(outChan, year)
-	CacheGraph(year, authors, paths, freq)
-	return freq, nil
+	for commit := range outChan {
+		d := commit.TimeStamp.YearDay() - 1
+		commits[d] = append(commits[d], commit)
+	}
+	CacheRepos(year, authors, paths, commits)
+	return commits, nil
 }
 
 func (paths RepoSet) FrequencyChan(year int, authors []string) (types.Freq, error) {
@@ -94,18 +97,7 @@ func (paths RepoSet) FrequencyChan(year int, authors []string) (types.Freq, erro
 		wg.Wait()
 		close(outChan)
 	}()
-	yearLength := 365
-	if year%4 == 0 {
-		yearLength++
-	}
-	freq := make([][]types.Commit, yearLength)
-	for commit := range cc {
-		freq[commit.TimeStamp.YearDay()-1]++
-	}
-	return freq
 
-	for commit := range outChan {
-	}
 	freq := YearFreqFromChan(outChan, year)
 	CacheGraph(year, authors, paths, freq)
 	return freq, nil
