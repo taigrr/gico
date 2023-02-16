@@ -70,7 +70,7 @@ func initialModel() (model, error) {
 	if err != nil {
 		return m, err
 	}
-	// m.CommitLogModel, err = NewCommitLog()
+	m.CommitLogModel, err = NewCommitLog()
 	if err != nil {
 		return m, err
 	}
@@ -109,7 +109,11 @@ func (m CommitLog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.Selected--
 			}
 		default:
-			//		m.Commits = commits.CommitSet
+			mr := commits.RepoSet(m.Repos)
+			cis, err := mr.GetRepoCommits(m.Year, m.Authors)
+			if err != nil {
+				m.Commits = cis
+			}
 		}
 	}
 	return m, nil
