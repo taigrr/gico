@@ -13,36 +13,41 @@ import (
 	"github.com/taigrr/gico/types"
 )
 
-type errMsg error
+const (
+	settings Cursor = iota
+	graph
+	commitLog
+)
 
-type model struct {
-	SettingsModel  Settings
-	GraphModel     Graph
-	CommitLogModel CommitLog
-	HelpModel      help.Model
-	Bindings       []key.Binding
-	quitting       bool
-	cursor         Cursor
-	err            error
-}
-
-type CommitLog struct {
-	Year     int
-	YearDay  int
-	Commits  [][]types.Commit
-	Selected int
-	Authors  []string
-	Repos    []string
-}
-
-type Settings struct{}
-
-type Graph struct {
-	Selected int
-	Year     int
-	Repos    []string
-	Authors  []string
-}
+type (
+	Cursor int
+	errMsg error
+	model  struct {
+		SettingsModel  Settings
+		GraphModel     Graph
+		CommitLogModel CommitLog
+		HelpModel      help.Model
+		Bindings       []key.Binding
+		quitting       bool
+		cursor         Cursor
+		err            error
+	}
+	CommitLog struct {
+		Year     int
+		YearDay  int
+		Commits  [][]types.Commit
+		Selected int
+		Authors  []string
+		Repos    []string
+	}
+	Settings struct{}
+	Graph    struct {
+		Selected int
+		Year     int
+		Repos    []string
+		Authors  []string
+	}
+)
 
 var (
 	quitKeys = key.NewBinding(
@@ -54,14 +59,6 @@ var (
 		key.WithHelp("", "press ctrl+g to open settings"),
 	)
 )
-
-const (
-	settings Cursor = iota
-	graph
-	commitLog
-)
-
-type Cursor int
 
 func initialModel() (model, error) {
 	var m model
