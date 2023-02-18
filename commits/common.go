@@ -50,7 +50,7 @@ func GetAuthorName() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return conf.Author.Name, nil
+	return conf.User.Name, nil
 }
 
 func GetAuthorEmail() (string, error) {
@@ -58,5 +58,5 @@ func GetAuthorEmail() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return conf.Author.Email, nil
+	return conf.User.Email, nil
 }

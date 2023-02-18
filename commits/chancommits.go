@@ -39,11 +39,11 @@ func (paths RepoSet) GetRepoCommits(year int, authors []string) ([][]types.Commi
 				return
 			}
 			cc = FilterCChanByYear(cc, year)
-			cc, err = FilterCChanByAuthor(cc, authors)
+			cc2, err := FilterCChanByAuthor(cc, authors)
 			if err != nil {
 				return
 			}
-			for c := range cc {
+			for c := range cc2 {
 				outChan <- c
 			}
 		}(p)

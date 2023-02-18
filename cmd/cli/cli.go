@@ -9,6 +9,7 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+
 	"github.com/taigrr/gico/commits"
 	"github.com/taigrr/gico/types"
 )
@@ -185,15 +186,20 @@ func NewCommitLog() (CommitLog, error) {
 	now := time.Now()
 	today := now.YearDay() - 1
 	year := now.Year()
-	aName, _ := commits.GetAuthorName()
-	aEmail, _ := commits.GetAuthorEmail()
-	authors := []string{aName, aEmail}
+	aName, err := commits.GetAuthorName()
+	if err != nil {
+		return m, err
+	}
+	aEmail, err := commits.GetAuthorEmail()
+	if err != nil {
+		return m, err
+	}
 	mr, err := commits.GetMRRepos()
 	if err != nil {
 		return m, err
 	}
+	m.Authors = []string{aName, aEmail}
 	m.Repos = mr
-	m.Authors = authors
 	m.Year = year
 	m.Selected = today
 	m.Commits, err = mr.GetRepoCommits(m.Year, m.Authors)
