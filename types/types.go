@@ -1,6 +1,8 @@
 package types
 
 import (
+	"fmt"
+	"strings"
 	"time"
 )
 
@@ -37,3 +39,10 @@ type (
 		Commits []Commit  `json:"commits,omitempty"`
 	}
 )
+
+func (c Commit) String() string {
+	return fmt.Sprintf("%s\t%s\t%s\t%s\n",
+		c.TimeStamp.Format("0"+time.Kitchen),
+		c.Author, c.Repo,
+		strings.TrimSpace(c.Message))
+}
