@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/charmbracelet/bubbles/help"
@@ -117,6 +118,7 @@ func (m CommitLog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 	var cmd tea.Cmd
+	m.Paginator.SetTotalPages(len(m.Commits[m.YearDay]))
 	m.Paginator, cmd = m.Paginator.Update(msg)
 	return m, cmd
 }
@@ -128,6 +130,8 @@ func newPaginator() paginator.Model {
 	p.ActiveDot = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "235", Dark: "252"}).Render("•")
 	p.InactiveDot = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "250", Dark: "238"}).Render("•")
 	p.SetTotalPages(1)
+	p.KeyMap.NextPage = key.NewBinding(key.WithKeys("h", "j"))
+	p.KeyMap.PrevPage = key.NewBinding(key.WithKeys("k", "l"))
 	return p
 }
 
@@ -143,8 +147,15 @@ func (m CommitLog) View() string {
 	if len(m.Commits[m.YearDay]) == 0 {
 		return "No commits to display"
 	}
-
-	return fmt.Sprintf("%v", m.Commits[m.YearDay])
+	var b strings.Builder
+	b.WriteString("\nCommit Log\n\n")
+	m.Paginator.SetTotalPages(len(m.Commits[m.YearDay]))
+	start, end := m.Paginator.GetSliceBounds(len(m.Commits[m.YearDay]))
+	for _, item := range m.Commits[m.YearDay][start:end] {
+		b.WriteString(item.String() + "\n")
+	}
+	b.WriteString(m.Paginator.View())
+	return b.String()
 	// return fmt.Sprintf("This is the Commit Log, selected %v", "sd")
 }
 

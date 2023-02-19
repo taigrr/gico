@@ -45,7 +45,7 @@ type (
 )
 
 func (c Commit) String() string {
-	return fmt.Sprintf("%s\t%s\t%s\t%s\n",
+	return fmt.Sprintf("%s\t%s\t%s\t%s",
 		c.TimeStamp.Format("0"+time.Kitchen),
 		c.Author, c.Repo,
 		strings.TrimSpace(c.Message))
