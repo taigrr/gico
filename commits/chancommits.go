@@ -94,6 +94,11 @@ func (paths RepoSet) GetRepoCommits(year int, authors []string) ([][]types.Commi
 		d := commit.TimeStamp.YearDay() - 1
 		commits[d] = append(commits[d], commit)
 	}
+	for i := 0; i < len(commits); i++ {
+		sort.Slice(commits[i], func(w, j int) bool {
+			return commits[i][w].TimeStamp.Before(commits[i][j].TimeStamp)
+		})
+	}
 	CacheRepos(year, authors, paths, commits)
 	return commits, nil
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
+	"github.com/charmbracelet/bubbles/paginator"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
@@ -34,12 +35,13 @@ type (
 		err            error
 	}
 	CommitLog struct {
-		Year     int
-		YearDay  int
-		Commits  [][]types.Commit
-		Selected int
-		Authors  []string
-		Repos    []string
+		Year      int
+		YearDay   int
+		Commits   [][]types.Commit
+		Selected  int
+		Authors   []string
+		Repos     []string
+		Paginator paginator.Model
 	}
 	Settings struct{}
 	Graph    struct {
@@ -114,7 +116,19 @@ func (m CommitLog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 	}
-	return m, nil
+	var cmd tea.Cmd
+	m.Paginator, cmd = m.Paginator.Update(msg)
+	return m, cmd
+}
+
+func newPaginator() paginator.Model {
+	p := paginator.New()
+	p.Type = paginator.Dots
+	p.PerPage = 8
+	p.ActiveDot = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "235", Dark: "252"}).Render("•")
+	p.InactiveDot = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "250", Dark: "238"}).Render("•")
+	p.SetTotalPages(1)
+	return p
 }
 
 func (m CommitLog) Init() tea.Cmd {
@@ -125,6 +139,11 @@ func (m CommitLog) View() string {
 	if len(m.Commits) == 0 {
 		return "No commits to display"
 	}
+
+	if len(m.Commits[m.YearDay]) == 0 {
+		return "No commits to display"
+	}
+
 	return fmt.Sprintf("%v", m.Commits[m.YearDay])
 	// return fmt.Sprintf("This is the Commit Log, selected %v", "sd")
 }
@@ -202,7 +221,11 @@ func NewCommitLog() (CommitLog, error) {
 	m.Repos = mr
 	m.Year = year
 	m.Selected = today
+	m.Paginator = newPaginator()
 	m.Commits, err = mr.GetRepoCommits(m.Year, m.Authors)
+	if err != nil {
+		return m, err
+	}
 	return m, err
 }
 
