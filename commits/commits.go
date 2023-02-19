@@ -89,7 +89,10 @@ func (repo Repo) GetCommitSet() (CommitSet, error) {
 	cIter.ForEach(func(c *object.Commit) error {
 		ts := c.Author.When
 		commit := types.Commit{
-			Author:  c.Author.Name,
+			Author: types.Author{
+				Name:  c.Author.Name,
+				Email: c.Author.Email,
+			},
 			Message: c.Message, TimeStamp: ts,
 			Hash: c.Hash.String(), Repo: repo.Path,
 			FilesChanged: 0, Added: 0, Deleted: 0,
@@ -137,7 +140,7 @@ func (cs CommitSet) FilterByAuthorRegex(authors []string) (CommitSet, error) {
 	for _, commit := range cs.Commits {
 	regset:
 		for _, r := range regSet {
-			if r.MatchString(commit.Author) {
+			if r.MatchString(commit.Author.Name) || r.MatchString(commit.Author.Email) {
 				newCS.Commits = append(newCS.Commits, commit)
 				break regset
 			}

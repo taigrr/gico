@@ -10,10 +10,10 @@ func NewDataSet() DataSet {
 	return make(DataSet)
 }
 
-func NewCommit(Author, Message, Repo, Path string, Added, Deleted, FilesChanged int) Commit {
+func NewCommit(AuthorName, AuthorEmail, Message, Repo, Path string, Added, Deleted, FilesChanged int) Commit {
 	ci := Commit{
 		Message: Message, Added: Added, Deleted: Deleted,
-		Author: Author, FilesChanged: FilesChanged, TimeStamp: time.Now(),
+		Author: Author{Name: AuthorName, Email: AuthorEmail}, FilesChanged: FilesChanged, TimeStamp: time.Now(),
 		Repo: Repo, Path: Path,
 	}
 	return ci

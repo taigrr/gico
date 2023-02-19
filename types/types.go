@@ -8,6 +8,10 @@ import (
 
 type (
 	Month  string
+	Author struct {
+		Name  string `json:"name,omitempty"`
+		Email string `json:"email,omitempty"`
+	}
 	Commit struct {
 		Deleted      int       `json:"deleted,omitempty"`
 		Added        int       `json:"added,omitempty"`
@@ -15,7 +19,7 @@ type (
 		Message      string    `json:"message,omitempty"`
 		Hash         string    `json:"hash,omitempty"`
 		TimeStamp    time.Time `json:"ts,omitempty"`
-		Author       string    `json:"author,omitempty"`
+		Author       Author    `json:"author,omitempty"`
 		Repo         string    `json:"repo,omitempty"`
 		Path         string    `json:"path,omitempty"`
 	}

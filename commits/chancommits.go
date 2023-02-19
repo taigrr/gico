@@ -2,6 +2,7 @@ package commits
 
 import (
 	"regexp"
+	"sort"
 	"sync"
 
 	git "github.com/go-git/go-git/v5"
@@ -9,6 +10,43 @@ import (
 
 	"github.com/taigrr/gico/types"
 )
+
+func (paths RepoSet) GetRepoAuthors() ([]string, error) {
+	outChan := make(chan types.Commit, 10)
+	var wg sync.WaitGroup
+	for _, p := range paths {
+		wg.Add(1)
+		go func(path string) {
+			defer wg.Done()
+			repo, err := OpenRepo(path)
+			if err != nil {
+				return
+			}
+			cc, err := repo.GetCommitChan()
+			if err != nil {
+				return
+			}
+			for c := range cc {
+				outChan <- c
+			}
+		}(p)
+	}
+	go func() {
+		wg.Wait()
+		close(outChan)
+	}()
+	authors := make(map[string]bool)
+	for commit := range outChan {
+		authors[commit.Author.Email] = true
+		authors[commit.Author.Name] = true
+	}
+	a := []string{}
+	for k := range authors {
+		a = append(a, k)
+	}
+	sort.Strings(a)
+	return a, nil
+}
 
 func (paths RepoSet) GetRepoCommits(year int, authors []string) ([][]types.Commit, error) {
 	yearLength := 365
@@ -132,7 +170,10 @@ func (repo Repo) GetCommitChan() (chan types.Commit, error) {
 		cIter.ForEach(func(c *object.Commit) error {
 			ts := c.Author.When
 			commit := types.Commit{
-				Author:  c.Author.Name,
+				Author: types.Author{
+					Name:  c.Author.Name,
+					Email: c.Author.Email,
+				},
 				Message: c.Message, TimeStamp: ts,
 				Hash: c.Hash.String(), Repo: repo.Path,
 				FilesChanged: 0, Added: 0, Deleted: 0,
@@ -197,7 +238,7 @@ func FilterCChanByAuthor(in chan types.Commit, authors []string) (chan types.Com
 		for commit := range in {
 		regset:
 			for _, r := range regSet {
-				if r.MatchString(commit.Author) {
+				if r.MatchString(commit.Author.Email) || r.MatchString(commit.Author.Name) {
 					out <- commit
 					break regset
 				}
