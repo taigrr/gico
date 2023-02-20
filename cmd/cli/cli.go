@@ -301,9 +301,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case graph, commitLog:
 		tmp, _ := m.GraphModel.Update(msg)
 		m.GraphModel, _ = tmp.(Graph)
+		m.CommitLogModel.YearDay = m.GraphModel.Selected
+		m.CommitLogModel.Selected = 0
+		m.CommitLogModel.Paginator.Page = 0
 		tmpC, cmd := m.CommitLogModel.Update(msg)
 		m.CommitLogModel, _ = tmpC.(CommitLog)
-		m.CommitLogModel.YearDay = m.GraphModel.Selected
 		return m, cmd
 	case settings:
 		tmp, cmd := m.SettingsModel.Update(msg)
