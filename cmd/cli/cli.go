@@ -111,10 +111,9 @@ func (m CommitLog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		default:
 			mr := commits.RepoSet(m.Repos)
-			cis, err := mr.GetRepoCommits(m.Year, m.Authors)
-			if err != nil {
-				m.Commits = cis
-			}
+			cis, _ := mr.GetRepoCommits(m.Year, m.Authors)
+			m.Commits = cis
+
 		}
 	}
 	var cmd tea.Cmd
@@ -301,6 +300,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case graph, commitLog:
 		tmp, _ := m.GraphModel.Update(msg)
 		m.GraphModel, _ = tmp.(Graph)
+
+		m.CommitLogModel.Year = m.GraphModel.Year
 		m.CommitLogModel.YearDay = m.GraphModel.Selected
 		m.CommitLogModel.Selected = 0
 		m.CommitLogModel.Paginator.Page = 0
