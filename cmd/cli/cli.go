@@ -109,12 +109,7 @@ func (m CommitLog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "j":
-			m.Table.MoveDown(1)
-			return m, nil
-		case "k":
-			m.Table.MoveUp(1)
-			return m, nil
+		case "j", "k", "b", "n", "pgdown", "pgup":
 		default:
 			mr := commits.RepoSet(m.Repos)
 			cis, _ := mr.GetRepoCommits(m.Year, m.Authors)
@@ -132,6 +127,7 @@ func (m CommitLog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				rows = append(rows, r)
 			}
 			m.Table.SetRows(rows)
+			m.Table.SetCursor(0)
 		}
 	}
 	var cmd tea.Cmd
@@ -147,7 +143,6 @@ func newTable() table.Model {
 		{Title: "Author", Width: 15},
 		{Title: "Message", Width: 40},
 	})
-	t.SetCursor(0)
 	t.KeyMap.LineUp = key.NewBinding(key.WithKeys("k"),
 		key.WithHelp("k", "move up one commit"))
 	t.KeyMap.LineDown = key.NewBinding(key.WithKeys("j"),
@@ -270,6 +265,7 @@ func NewCommitLog() (CommitLog, error) {
 	if err != nil {
 		return m, err
 	}
+	m.Table.SetCursor(0)
 	return m, err
 }
 
