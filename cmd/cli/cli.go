@@ -37,13 +37,12 @@ type (
 		err            error
 	}
 	CommitLog struct {
-		Year     int
-		YearDay  int
-		Commits  [][]types.Commit
-		Selected int
-		Authors  []string
-		Repos    []string
-		Table    table.Model
+		Year    int
+		YearDay int
+		Commits [][]types.Commit
+		Authors []string
+		Repos   []string
+		Table   table.Model
 	}
 	Settings struct{}
 	Graph    struct {
@@ -78,7 +77,15 @@ func initialModel() (model, error) {
 	}
 	m.cursor = graph
 	m.HelpModel = help.New()
-	m.Bindings = []key.Binding{quitKeys, settingsKey}
+	m.Bindings = []key.Binding{
+		quitKeys,
+		settingsKey,
+		m.CommitLogModel.Table.KeyMap.LineDown,
+		m.CommitLogModel.Table.KeyMap.LineUp,
+		m.CommitLogModel.Table.KeyMap.PageUp,
+		m.CommitLogModel.Table.KeyMap.PageDown,
+	}
+
 	return m, nil
 }
 
@@ -112,21 +119,21 @@ func (m CommitLog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			mr := commits.RepoSet(m.Repos)
 			cis, _ := mr.GetRepoCommits(m.Year, m.Authors)
 			m.Commits = cis
+			commits := m.Commits[m.YearDay]
+			rows := []table.Row{}
+			for _, c := range commits {
+				repo := filepath.Base(c.Repo)
+				r := table.Row{
+					c.TimeStamp.Format("0" + time.Kitchen),
+					repo,
+					c.Author.Name,
+					c.Message,
+				}
+				rows = append(rows, r)
+			}
+			m.Table.SetRows(rows)
 		}
 	}
-	commits := m.Commits[m.YearDay]
-	rows := []table.Row{}
-	for _, c := range commits {
-		repo := filepath.Base(c.Repo)
-		r := table.Row{
-			c.TimeStamp.Format("0" + time.Kitchen),
-			repo,
-			c.Author.Name,
-			c.Message,
-		}
-		rows = append(rows, r)
-	}
-	m.Table.SetRows(rows)
 	var cmd tea.Cmd
 	m.Table, cmd = m.Table.Update(msg)
 	return m, cmd
@@ -141,8 +148,10 @@ func newTable() table.Model {
 		{Title: "Message", Width: 40},
 	})
 	t.SetCursor(0)
-	t.KeyMap.LineUp = key.NewBinding(key.WithHelp("k", "move up one commit"))
-	t.KeyMap.LineDown = key.NewBinding(key.WithHelp("j", "move down one commit"))
+	t.KeyMap.LineUp = key.NewBinding(key.WithKeys("k"),
+		key.WithHelp("k", "move up one commit"))
+	t.KeyMap.LineDown = key.NewBinding(key.WithKeys("j"),
+		key.WithHelp("j", "move down one commit"))
 	t.Focus()
 	return t
 }
@@ -238,8 +247,25 @@ func NewCommitLog() (CommitLog, error) {
 	m.Authors = []string{aName, aEmail}
 	m.Repos = mr
 	m.Year = year
-	m.Selected = today
+	m.YearDay = today
 	m.Table = newTable()
+	{
+		cis, _ := mr.GetRepoCommits(m.Year, m.Authors)
+		m.Commits = cis
+		commits := m.Commits[m.YearDay]
+		rows := []table.Row{}
+		for _, c := range commits {
+			repo := filepath.Base(c.Repo)
+			r := table.Row{
+				c.TimeStamp.Format("0" + time.Kitchen),
+				repo,
+				c.Author.Name,
+				c.Message,
+			}
+			rows = append(rows, r)
+		}
+		m.Table.SetRows(rows)
+	}
 	m.Commits, err = mr.GetRepoCommits(m.Year, m.Authors)
 	if err != nil {
 		return m, err
@@ -312,7 +338,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.CommitLogModel.Year = m.GraphModel.Year
 		if m.CommitLogModel.YearDay != m.GraphModel.Selected {
 			m.CommitLogModel.YearDay = m.GraphModel.Selected
-			m.CommitLogModel.Selected = 0
 			m.CommitLogModel.Table.SetCursor(0)
 		}
 		tmpC, cmd := m.CommitLogModel.Update(msg)
