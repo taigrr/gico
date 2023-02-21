@@ -9,7 +9,6 @@ import (
 
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
-	"github.com/charmbracelet/bubbles/paginator"
 	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -104,49 +103,48 @@ func (m CommitLog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "j":
-			if m.Selected < len(m.Commits)-1 {
-				m.Selected++
-			}
+			m.Table.MoveDown(1)
+			return m, nil
 		case "k":
-			if m.Selected > 0 {
-				m.Selected--
-			}
+			m.Table.MoveUp(1)
+			return m, nil
 		default:
 			mr := commits.RepoSet(m.Repos)
 			cis, _ := mr.GetRepoCommits(m.Year, m.Authors)
 			m.Commits = cis
-
 		}
 	}
-	var cmd tea.Cmd
 	commits := m.Commits[m.YearDay]
 	rows := []table.Row{}
 	for _, c := range commits {
 		repo := filepath.Base(c.Repo)
-		r := table.Row{c.TimeStamp.Format("0" + time.Kitchen), repo, c.Author.Name, c.Message}
+		r := table.Row{
+			c.TimeStamp.Format("0" + time.Kitchen),
+			repo,
+			c.Author.Name,
+			c.Message,
+		}
 		rows = append(rows, r)
 	}
 	m.Table.SetRows(rows)
+	var cmd tea.Cmd
 	m.Table, cmd = m.Table.Update(msg)
 	return m, cmd
 }
 
 func newTable() table.Model {
 	t := table.New()
-	t.SetColumns([]table.Column{{Title: "Time", Width: 8}, {Title: "Repository", Width: 20}, {Title: "Author", Width: 15}, {Title: "Message", Width: 40}})
+	t.SetColumns([]table.Column{
+		{Title: "Time", Width: 8},
+		{Title: "Repository", Width: 20},
+		{Title: "Author", Width: 15},
+		{Title: "Message", Width: 40},
+	})
+	t.SetCursor(0)
+	t.KeyMap.LineUp = key.NewBinding(key.WithHelp("k", "move up one commit"))
+	t.KeyMap.LineDown = key.NewBinding(key.WithHelp("j", "move down one commit"))
+	t.Focus()
 	return t
-}
-
-func newPaginator() paginator.Model {
-	p := paginator.New()
-	p.Type = paginator.Dots
-	p.PerPage = 8
-	p.ActiveDot = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "235", Dark: "252"}).Render("•")
-	p.InactiveDot = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "250", Dark: "238"}).Render("•")
-	p.SetTotalPages(1)
-	p.KeyMap.NextPage = key.NewBinding(key.WithKeys("h", "j"))
-	p.KeyMap.PrevPage = key.NewBinding(key.WithKeys("k", "l"))
-	return p
 }
 
 func (m CommitLog) Init() tea.Cmd {
@@ -312,9 +310,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.GraphModel, _ = tmp.(Graph)
 
 		m.CommitLogModel.Year = m.GraphModel.Year
-		m.CommitLogModel.YearDay = m.GraphModel.Selected
-		m.CommitLogModel.Selected = 0
-		m.CommitLogModel.Table.SetCursor(0)
+		if m.CommitLogModel.YearDay != m.GraphModel.Selected {
+			m.CommitLogModel.YearDay = m.GraphModel.Selected
+			m.CommitLogModel.Selected = 0
+			m.CommitLogModel.Table.SetCursor(0)
+		}
 		tmpC, cmd := m.CommitLogModel.Update(msg)
 		m.CommitLogModel, _ = tmpC.(CommitLog)
 		return m, cmd
