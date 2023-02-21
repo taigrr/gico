@@ -3,12 +3,14 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/paginator"
+	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
@@ -36,13 +38,13 @@ type (
 		err            error
 	}
 	CommitLog struct {
-		Year      int
-		YearDay   int
-		Commits   [][]types.Commit
-		Selected  int
-		Authors   []string
-		Repos     []string
-		Paginator paginator.Model
+		Year     int
+		YearDay  int
+		Commits  [][]types.Commit
+		Selected int
+		Authors  []string
+		Repos    []string
+		Table    table.Model
 	}
 	Settings struct{}
 	Graph    struct {
@@ -117,9 +119,22 @@ func (m CommitLog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 	var cmd tea.Cmd
-	m.Paginator.SetTotalPages(len(m.Commits[m.YearDay]))
-	m.Paginator, cmd = m.Paginator.Update(msg)
+	commits := m.Commits[m.YearDay]
+	rows := []table.Row{}
+	for _, c := range commits {
+		repo := filepath.Base(c.Repo)
+		r := table.Row{c.TimeStamp.Format("0" + time.Kitchen), repo, c.Author.Name, c.Message}
+		rows = append(rows, r)
+	}
+	m.Table.SetRows(rows)
+	m.Table, cmd = m.Table.Update(msg)
 	return m, cmd
+}
+
+func newTable() table.Model {
+	t := table.New()
+	t.SetColumns([]table.Column{{Title: "Time", Width: 8}, {Title: "Repository", Width: 20}, {Title: "Author", Width: 15}, {Title: "Message", Width: 40}})
+	return t
 }
 
 func newPaginator() paginator.Model {
@@ -148,12 +163,7 @@ func (m CommitLog) View() string {
 	}
 	var b strings.Builder
 	b.WriteString("\nCommit Log\n\n")
-	m.Paginator.SetTotalPages(len(m.Commits[m.YearDay]))
-	start, end := m.Paginator.GetSliceBounds(len(m.Commits[m.YearDay]))
-	for _, item := range m.Commits[m.YearDay][start:end] {
-		b.WriteString(item.String() + "\n")
-	}
-	b.WriteString(m.Paginator.View())
+	b.WriteString(m.Table.View())
 	return b.String()
 	// return fmt.Sprintf("This is the Commit Log, selected %v", "sd")
 }
@@ -231,7 +241,7 @@ func NewCommitLog() (CommitLog, error) {
 	m.Repos = mr
 	m.Year = year
 	m.Selected = today
-	m.Paginator = newPaginator()
+	m.Table = newTable()
 	m.Commits, err = mr.GetRepoCommits(m.Year, m.Authors)
 	if err != nil {
 		return m, err
@@ -304,7 +314,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.CommitLogModel.Year = m.GraphModel.Year
 		m.CommitLogModel.YearDay = m.GraphModel.Selected
 		m.CommitLogModel.Selected = 0
-		m.CommitLogModel.Paginator.Page = 0
+		m.CommitLogModel.Table.SetCursor(0)
 		tmpC, cmd := m.CommitLogModel.Update(msg)
 		m.CommitLogModel, _ = tmpC.(CommitLog)
 		return m, cmd
