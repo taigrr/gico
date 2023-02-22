@@ -12,6 +12,10 @@ import (
 )
 
 func (paths RepoSet) GetRepoAuthors() ([]string, error) {
+	cache, ok := GetCachedReposAuthors(paths)
+	if ok {
+		return cache, nil
+	}
 	outChan := make(chan types.Commit, 10)
 	var wg sync.WaitGroup
 	for _, p := range paths {
@@ -45,6 +49,7 @@ func (paths RepoSet) GetRepoAuthors() ([]string, error) {
 		a = append(a, k)
 	}
 	sort.Strings(a)
+	CacheReposAuthors(paths, a)
 	return a, nil
 }
 

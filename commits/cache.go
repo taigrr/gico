@@ -12,10 +12,11 @@ import (
 )
 
 var (
-	mapTex        sync.RWMutex
-	freqHashCache map[int]map[string]map[string]types.ExpFreq
-	repoHashCache map[int]map[string]map[string]types.ExpRepos
-	repoCache     = make(map[string]types.ExpRepo)
+	mapTex          sync.RWMutex
+	freqHashCache   map[int]map[string]map[string]types.ExpFreq
+	repoHashCache   map[int]map[string]map[string]types.ExpRepos
+	authorHashCache map[string]types.ExpAuthors
+	repoCache       = make(map[string]types.ExpRepo)
 	// the Repo Cache holds a list of all commits from HEAD back to parent
 	// the key is the repo path
 	// if the hash of the first commit / HEAD commit doesn't match the current HEAD,
@@ -26,6 +27,7 @@ func init() {
 	freqHashCache = make(map[int]map[string]map[string]types.ExpFreq)
 	repoHashCache = make(map[int]map[string]map[string]types.ExpRepos)
 	repoCache = make(map[string]types.ExpRepo)
+	authorHashCache = make(map[string]types.ExpAuthors)
 }
 
 func hashSlice(in []string) string {
@@ -87,6 +89,32 @@ func CacheRepo(path string, commits []types.Commit) {
 	}()
 }
 
+func CacheReposAuthors(paths []string, authors []string) {
+	r := hashSlice(paths)
+	mapTex.Lock()
+	defer mapTex.Unlock()
+	authorHashCache[r] = types.ExpAuthors{Authors: authors, Created: time.Now()}
+	go func() {
+		time.Sleep(time.Hour * 1)
+		mapTex.Lock()
+		defer mapTex.Unlock()
+		delete(authorHashCache, r)
+	}()
+}
+
+func GetCachedReposAuthors(paths []string) ([]string, bool) {
+	r := hashSlice(paths)
+	mapTex.RLock()
+	defer mapTex.RUnlock()
+	if m1, ok := authorHashCache[r]; !ok {
+		return []string{}, false
+	} else if m1.Created.Before(time.Now().Add(time.Minute * -15)) {
+		return []string{}, false
+	} else {
+		return m1.Authors, true
+	}
+}
+
 func GetCachedRepos(year int, authors, repoPaths []string) ([][]types.Commit, bool) {
 	a := hashSlice(authors)
 	r := hashSlice(repoPaths)
@@ -127,6 +155,7 @@ func CacheRepos(year int, authors, repoPaths []string, commits [][]types.Commit)
 		time.Sleep(time.Hour * 1)
 		mapTex.Lock()
 		defer mapTex.Unlock()
+		// optimization, check if the creation time has changed since the last usage
 		delete(repoHashCache[year][a], r)
 	}()
 }
