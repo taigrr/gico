@@ -21,6 +21,9 @@ const (
 	settings Cursor = iota
 	graph
 	commitLog
+
+	authors SettingsCursor = iota
+	repos
 )
 
 type (
@@ -44,8 +47,15 @@ type (
 		Repos   []string
 		Table   table.Model
 	}
-	Settings struct{}
-	Graph    struct {
+	SettingsCursor int
+	Settings       struct {
+		AllAuthors      []string
+		SelectedAuthors []string
+		AllRepos        []string
+		SelectedRepos   []string
+		cursor          SettingsCursor
+	}
+	Graph struct {
 		Selected int
 		Year     int
 		Repos    []string
