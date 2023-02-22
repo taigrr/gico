@@ -9,6 +9,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
+	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -54,6 +55,8 @@ type (
 		AllRepos        []string
 		SelectedRepos   []string
 		cursor          SettingsCursor
+		AuthorList list.Model
+		RepoList list.Model
 	}
 	Graph struct {
 		Selected int
