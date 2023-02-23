@@ -50,13 +50,14 @@ type (
 	}
 	SettingsCursor int
 	Settings       struct {
-		AllAuthors      []string
-		SelectedAuthors []string
-		AllRepos        []string
-		SelectedRepos   []string
-		cursor          SettingsCursor
-		AuthorList      list.Model
-		RepoList        list.Model
+		AllAuthors       map[string]bool
+		SelectedAuthors  []string
+		AllRepos         map[string]bool
+		SelectedRepos    []string
+		cursor           SettingsCursor
+		highlightedEntry int
+		AuthorList       list.Model
+		RepoList         list.Model
 	}
 	Graph struct {
 		Selected int
@@ -290,15 +291,25 @@ func NewSettings() (Settings, error) {
 	var m Settings
 	var err error
 	m.cursor = authors
-	m.AllRepos, err = commits.GetMRRepos()
+	allRepos, err := commits.GetMRRepos()
 	if err != nil {
 		return m, err
 	}
-	m.SelectedRepos = m.AllRepos
-	m.AllAuthors, err = commits.RepoSet(m.AllRepos).GetRepoAuthors()
+	allAuthors, err := commits.RepoSet(allRepos).GetRepoAuthors()
 	if err != nil {
 		return m, err
 	}
+
+	m.AllRepos = make(map[string]bool)
+	for _, v := range allRepos {
+		m.AllRepos[v] = true
+	}
+
+	m.AllAuthors = make(map[string]bool)
+	for _, v := range allAuthors {
+		m.AllAuthors[v] = false
+	}
+	m.SelectedRepos = allRepos
 	email, _ := commits.GetAuthorEmail()
 	if email != "" {
 		m.SelectedAuthors = append(m.SelectedAuthors, email)
@@ -306,6 +317,9 @@ func NewSettings() (Settings, error) {
 	name, _ := commits.GetAuthorName()
 	if name != "" {
 		m.SelectedAuthors = append(m.SelectedAuthors, name)
+	}
+	for _, v := range m.SelectedRepos {
+		m.AllAuthors[v] = true
 	}
 	return m, nil
 }
