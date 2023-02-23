@@ -55,8 +55,8 @@ type (
 		AllRepos        []string
 		SelectedRepos   []string
 		cursor          SettingsCursor
-		AuthorList list.Model
-		RepoList list.Model
+		AuthorList      list.Model
+		RepoList        list.Model
 	}
 	Graph struct {
 		Selected int
@@ -80,7 +80,11 @@ var (
 func initialModel() (model, error) {
 	var m model
 	var err error
-	m.GraphModel, err = NewGraph()
+	m.SettingsModel, err = NewSettings()
+	if err != nil {
+		return m, err
+	}
+	m.GraphModel, err = NewGraph(m.SettingsModel.SelectedAuthors, m.SettingsModel.SelectedRepos)
 	if err != nil {
 		return m, err
 	}
@@ -282,19 +286,36 @@ func NewCommitLog() (CommitLog, error) {
 	return m, err
 }
 
-func NewGraph() (Graph, error) {
+func NewSettings() (Settings, error) {
+	var m Settings
+	var err error
+	m.cursor = authors
+	m.AllRepos, err = commits.GetMRRepos()
+	if err != nil {
+		return m, err
+	}
+	m.SelectedRepos = m.AllRepos
+	m.AllAuthors, err = commits.RepoSet(m.AllRepos).GetRepoAuthors()
+	if err != nil {
+		return m, err
+	}
+	email, _ := commits.GetAuthorEmail()
+	if email != "" {
+		m.SelectedAuthors = append(m.SelectedAuthors, email)
+	}
+	name, _ := commits.GetAuthorName()
+	if name != "" {
+		m.SelectedAuthors = append(m.SelectedAuthors, name)
+	}
+	return m, nil
+}
+
+func NewGraph(authors, repos []string) (Graph, error) {
 	var m Graph
 	now := time.Now()
 	today := now.YearDay() - 1
 	year := now.Year()
-	aName, _ := commits.GetAuthorName()
-	aEmail, _ := commits.GetAuthorEmail()
-	authors := []string{aName, aEmail}
-	mr, err := commits.GetMRRepos()
-	if err != nil {
-		return m, err
-	}
-	m.Repos = mr
+	m.Repos = repos
 	m.Authors = authors
 	m.Year = year
 	m.Selected = today
