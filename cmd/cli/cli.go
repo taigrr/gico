@@ -362,6 +362,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch m.cursor {
 	// multiple cursors defined for extensibility, but only graph is used
 	case graph, commitLog:
+		m.GraphModel.Authors = m.SettingsModel.SelectedAuthors
+		m.GraphModel.Repos = m.SettingsModel.SelectedRepos
+
+		m.CommitLogModel.Authors = m.SettingsModel.SelectedAuthors
+		m.CommitLogModel.Repos = m.SettingsModel.SelectedRepos
+
 		tmp, _ := m.GraphModel.Update(msg)
 		m.GraphModel, _ = tmp.(Graph)
 
