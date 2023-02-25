@@ -408,7 +408,11 @@ func (m model) View() string {
 	if m.quitting {
 		return ""
 	}
-	return lipgloss.JoinVertical(lipgloss.Top, m.GraphModel.View(), m.CommitLogModel.View(), m.HelpModel.ShortHelpView(m.Bindings))
+	mainView := lipgloss.JoinVertical(lipgloss.Top, m.GraphModel.View(), m.CommitLogModel.View(), m.HelpModel.ShortHelpView(m.Bindings))
+	if m.cursor == settings {
+		return lipgloss.JoinHorizontal(lipgloss.Left, m.SettingsModel.View(), mainView)
+	}
+	return mainView
 }
 
 func main() {
