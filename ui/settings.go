@@ -35,6 +35,16 @@ var settingsKey = key.NewBinding(
 )
 
 func (m Settings) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch m.cursor {
+	case authors:
+		var cmd tea.Cmd
+		m.AuthorList, cmd = m.AuthorList.Update(msg)
+		return m, cmd
+	case repos:
+		var cmd tea.Cmd
+		m.RepoList, cmd = m.RepoList.Update(msg)
+		return m, cmd
+	}
 	return m, nil
 }
 
