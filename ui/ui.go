@@ -1,9 +1,6 @@
 package ui
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
@@ -139,16 +136,4 @@ func (m model) View() string {
 		return lipgloss.JoinHorizontal(lipgloss.Left, m.SettingsModel.View(), mainView)
 	}
 	return mainView
-}
-
-func main() {
-	m, err := InitialModel()
-	if err != nil {
-		panic(err)
-	}
-	p := tea.NewProgram(m)
-	if _, err := p.Run(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
 }
