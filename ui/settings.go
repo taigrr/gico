@@ -57,10 +57,28 @@ func (m Settings) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch m.cursor {
 	case authors:
 		var cmd tea.Cmd
+		switch msg := msg.(type) {
+		case tea.KeyMsg:
+			switch msg.String() {
+			case "space", "enter":
+				selected := m.AuthorList.Cursor()
+				m.AllAuthors[selected].selected = !m.AllAuthors[selected].selected
+			}
+		}
+		m.SelectedAuthors = m.AllAuthors.GetSelected()
 		m.AuthorList, cmd = m.AuthorList.Update(msg)
 		return m, cmd
 	case repos:
 		var cmd tea.Cmd
+		switch msg := msg.(type) {
+		case tea.KeyMsg:
+			switch msg.String() {
+			case "space", "enter":
+				selected := m.RepoList.Cursor()
+				m.AllRepos[selected].selected = !m.AllRepos[selected].selected
+			}
+		}
+		m.SelectedRepos = m.AllRepos.GetSelected()
 		m.RepoList, cmd = m.RepoList.Update(msg)
 		return m, cmd
 	}
