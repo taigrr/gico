@@ -18,9 +18,9 @@ const (
 type (
 	SettingsCursor int
 	Settings       struct {
-		AllAuthors       map[string]bool
+		AllAuthors       selectablelist
 		SelectedAuthors  []string
-		AllRepos         map[string]bool
+		AllRepos         selectablelist
 		SelectedRepos    []string
 		cursor           SettingsCursor
 		highlightedEntry int
@@ -28,6 +28,25 @@ type (
 		RepoList         list.Model
 	}
 )
+
+type selectablelist []selectable
+
+type selectable struct {
+	text     string
+	selected bool
+}
+
+func (i selectable) Title() string       { return i.text }
+func (i selectable) FilterValue() string { return i.text }
+func (i selectablelist) GetSelected() []string {
+	selected := []string{}
+	for _, v := range i {
+		if v.selected {
+			selected = append(selected, v.text)
+		}
+	}
+	return selected
+}
 
 var settingsKey = key.NewBinding(
 	key.WithKeys("ctrl+g"),
@@ -69,16 +88,16 @@ func NewSettings() (Settings, error) {
 		return m, err
 	}
 
-	m.AllRepos = make(map[string]bool)
+	m.AllRepos = []selectable{}
 	for _, v := range allRepos {
-		m.AllRepos[v] = true
+		m.AllRepos = append(m.AllRepos, selectable{text: v, selected: true})
 	}
 
-	m.AllAuthors = make(map[string]bool)
+	m.AllAuthors = []selectable{}
 	for _, v := range allAuthors {
-		m.AllAuthors[v] = false
+		m.AllAuthors = append(m.AllAuthors, selectable{text: v, selected: false})
 	}
-	m.SelectedRepos = allRepos
+	m.SelectedRepos = m.AllRepos.GetSelected()
 	email, _ := commits.GetAuthorEmail()
 	if email != "" {
 		m.SelectedAuthors = append(m.SelectedAuthors, email)
@@ -87,8 +106,14 @@ func NewSettings() (Settings, error) {
 	if name != "" {
 		m.SelectedAuthors = append(m.SelectedAuthors, name)
 	}
-	for _, v := range m.SelectedRepos {
-		m.AllAuthors[v] = true
+	for _, v := range m.SelectedAuthors {
+	inner:
+		for i, s := range m.AllAuthors {
+			if s.text == v {
+				m.AllAuthors[i].selected = true
+				break inner
+			}
+		}
 	}
 	return m, nil
 }

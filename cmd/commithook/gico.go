@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/taigrr/gico/types"
-	"github.com/taigrr/gico/ui"
 )
 
 var days [366]int
@@ -29,8 +28,6 @@ func main() {
 		increment()
 	case "graph":
 		printGraph()
-	case "interactive":
-		ui.InteractiveGraph()
 	case "loadRepo":
 		loadRepo()
 	default:
