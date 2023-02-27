@@ -1,11 +1,10 @@
 package ui
 
 import (
-	"fmt"
-
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 
 	"github.com/taigrr/gico/commits"
 )
@@ -90,7 +89,8 @@ func (m Settings) Init() tea.Cmd {
 }
 
 func (m Settings) View() string {
-	return fmt.Sprintf("This is the settings view %s", "fmt")
+	return lipgloss.JoinHorizontal(lipgloss.Top, m.AuthorList.View(), m.RepoList.View())
+	// return fmt.Sprintf("This is the settings view %s", "fmt")
 }
 
 func NewSettings() (Settings, error) {
@@ -133,5 +133,16 @@ func NewSettings() (Settings, error) {
 			}
 		}
 	}
+	repoItems := []list.Item{}
+	for _, v := range m.AllRepos {
+		repoItems = append(repoItems, v)
+	}
+	m.RepoList = list.New(repoItems, newItemDelegate(newDelegateKeyMap()), 0, 4)
+
+	authItems := []list.Item{}
+	for _, v := range m.AllAuthors {
+		authItems = append(authItems, v)
+	}
+	m.AuthorList = list.New(authItems, newItemDelegate(newDelegateKeyMap()), 0, 4)
 	return m, nil
 }
