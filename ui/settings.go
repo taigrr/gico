@@ -137,12 +137,12 @@ func NewSettings() (Settings, error) {
 	for _, v := range m.AllRepos {
 		repoItems = append(repoItems, v)
 	}
-	m.RepoList = list.New(repoItems, newItemDelegate(newDelegateKeyMap()), 0, 4)
+	m.RepoList = list.New(repoItems, selectableDelegate{}, 0, 4)
 
 	authItems := []list.Item{}
 	for _, v := range m.AllAuthors {
 		authItems = append(authItems, v)
 	}
-	m.AuthorList = list.New(authItems, newItemDelegate(newDelegateKeyMap()), 0, 4)
+	m.AuthorList = list.New(authItems, selectableDelegate{}, 0, 4)
 	return m, nil
 }
