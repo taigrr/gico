@@ -96,6 +96,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	default:
 	}
+	var b tea.BatchMsg
 	switch m.cursor {
 	// multiple cursors defined for extensibility, but only graph is used
 	case graph, commitLog:
@@ -104,8 +105,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		m.CommitLogModel.Authors = m.SettingsModel.SelectedAuthors
 		m.CommitLogModel.Repos = m.SettingsModel.SelectedRepos
-
-		tmp, _ := m.GraphModel.Update(msg)
+		tmp, c := m.GraphModel.Update(msg)
+		b = append(b, c)
 		m.GraphModel, _ = tmp.(Graph)
 
 		m.CommitLogModel.Year = m.GraphModel.Year
@@ -114,12 +115,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.CommitLogModel.Table.SetCursor(0)
 		}
 		tmpC, cmd := m.CommitLogModel.Update(msg)
+		b = append(b, cmd)
 		m.CommitLogModel, _ = tmpC.(CommitLog)
-		return m, cmd
+		fallthrough
 	case settings:
 		tmp, cmd := m.SettingsModel.Update(msg)
+
+		b = append(b, cmd)
 		m.SettingsModel, _ = tmp.(Settings)
-		return m, cmd
+		return m, tea.Batch(b...)
+
 	}
 	return m, nil
 }

@@ -53,6 +53,10 @@ var settingsKey = key.NewBinding(
 )
 
 func (m Settings) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	if msg, ok := msg.(tea.WindowSizeMsg); ok {
+		m.AuthorList.SetHeight(msg.Height - 8)
+		m.RepoList.SetHeight(msg.Height - 8)
+	}
 	switch m.cursor {
 	case authors:
 		var cmd tea.Cmd

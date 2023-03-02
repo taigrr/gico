@@ -25,11 +25,18 @@ func (s selectableDelegate) Render(w io.Writer, m list.Model, index int, item li
 	if !ok {
 		return
 	}
+	str := ""
 	if x.selected {
-		w.Write([]byte(" [X] " + x.text))
+		str += " [X] "
 	} else {
-		w.Write([]byte(" [ ] " + x.text))
+		str += " [ ] "
 	}
+	str += x.text
+	if m.Index() == index {
+		sty := list.NewDefaultItemStyles()
+		str = sty.SelectedTitle.Render(str)
+	}
+	w.Write([]byte(str))
 }
 
 type delegateKeyMap struct {
