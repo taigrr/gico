@@ -49,7 +49,7 @@ func (i selectablelist) GetSelected() []string {
 
 var settingsKey = key.NewBinding(
 	key.WithKeys("ctrl+g"),
-	key.WithHelp("", "press ctrl+g to open settings"),
+	key.WithHelp("ctrl+g", "press ctrl+g to open settings"),
 )
 
 func (m Settings) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -60,31 +60,74 @@ func (m Settings) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch m.cursor {
 	case authors:
 		var cmd tea.Cmd
+		batch := []tea.Cmd{}
 		switch msg := msg.(type) {
 		case tea.KeyMsg:
 			switch msg.String() {
-			case "space", "enter":
-				selected := m.AuthorList.Cursor()
-				m.AllAuthors[selected].selected = !m.AllAuthors[selected].selected
+			case " ", "enter":
+				selected := 0
+				if !m.AuthorList.IsFiltered() {
+					selected = m.AuthorList.Index()
+					m.AllAuthors[selected].selected = !m.AllAuthors[selected].selected
+					cmd = m.AuthorList.SetItem(selected, m.AllAuthors[selected])
+					batch = append(batch, cmd)
+				} else {
+					val := m.AuthorList.SelectedItem()
+					selectedItem, ok := val.(selectable)
+					if ok {
+						for i, v := range m.AllAuthors {
+							if v.text == selectedItem.text {
+								selected = i
+								break
+							}
+						}
+						m.AllAuthors[selected].selected = !m.AllAuthors[selected].selected
+						cmd = m.AuthorList.SetItem(selected, m.AllAuthors[selected])
+						batch = append(batch, cmd)
+					}
+				}
 			}
 		}
 		m.SelectedAuthors = m.AllAuthors.GetSelected()
 		m.AuthorList, cmd = m.AuthorList.Update(msg)
-		return m, cmd
+		batch = append(batch, cmd)
+		return m, tea.Batch(batch...)
 	case repos:
 		var cmd tea.Cmd
+		batch := []tea.Cmd{}
 		switch msg := msg.(type) {
 		case tea.KeyMsg:
 			switch msg.String() {
-			case "space", "enter":
-				selected := m.RepoList.Cursor()
-				m.AllRepos[selected].selected = !m.AllRepos[selected].selected
+			case " ", "enter":
+				selected := 0
+				if !m.RepoList.IsFiltered() {
+					selected = m.RepoList.Index()
+					m.AllRepos[selected].selected = !m.AllRepos[selected].selected
+					cmd = m.RepoList.SetItem(selected, m.AllRepos[selected])
+					batch = append(batch, cmd)
+				} else {
+					val := m.RepoList.SelectedItem()
+					selectedItem, ok := val.(selectable)
+					if ok {
+						for i, v := range m.AllRepos {
+							if v.text == selectedItem.text {
+								selected = i
+								break
+							}
+						}
+						m.AllRepos[selected].selected = !m.AllRepos[selected].selected
+						cmd = m.RepoList.SetItem(selected, m.AllRepos[selected])
+						batch = append(batch, cmd)
+					}
+				}
 			}
 		}
 		m.SelectedRepos = m.AllRepos.GetSelected()
 		m.RepoList, cmd = m.RepoList.Update(msg)
-		return m, cmd
+		batch = append(batch, cmd)
+		return m, tea.Batch(batch...)
 	}
+
 	return m, nil
 }
 

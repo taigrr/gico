@@ -46,7 +46,7 @@ type delegateKeyMap struct {
 func newDelegateKeyMap() *delegateKeyMap {
 	return &delegateKeyMap{
 		toggle: key.NewBinding(
-			key.WithKeys("space"),
+			key.WithKeys(" "),
 			key.WithHelp("space", "choose"),
 		),
 	}
