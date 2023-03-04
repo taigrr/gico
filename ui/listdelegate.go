@@ -8,7 +8,13 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-type selectableDelegate struct{}
+type SelectionMsg struct {
+	IsSelected bool
+}
+
+type selectableDelegate struct {
+	IsActiveList bool
+}
 
 func (s selectableDelegate) Height() int { return 1 }
 
@@ -17,6 +23,10 @@ func (s selectableDelegate) Spacing() int {
 }
 
 func (s selectableDelegate) Update(msg tea.Msg, m *list.Model) tea.Cmd {
+	if msg, ok := msg.(SelectionMsg); ok {
+		s.IsActiveList = msg.IsSelected
+		m.SetDelegate(s)
+	}
 	return nil
 }
 
@@ -32,7 +42,7 @@ func (s selectableDelegate) Render(w io.Writer, m list.Model, index int, item li
 		str += " [ ] "
 	}
 	str += x.text
-	if m.Index() == index {
+	if s.IsActiveList && m.Index() == index {
 		sty := list.NewDefaultItemStyles()
 		str = sty.SelectedTitle.Render(str)
 	}

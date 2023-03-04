@@ -57,8 +57,12 @@ func (m Settings) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if msg.String() == "tab" {
 			if m.cursor == authors {
 				m.cursor = repos
+				m.AuthorList.SetDelegate(selectableDelegate{IsActiveList: false})
+				m.RepoList.SetDelegate(selectableDelegate{IsActiveList: true})
 			} else {
 				m.cursor = authors
+				m.AuthorList.SetDelegate(selectableDelegate{IsActiveList: true})
+				m.RepoList.SetDelegate(selectableDelegate{IsActiveList: false})
 			}
 		}
 	}
@@ -193,12 +197,12 @@ func NewSettings() (Settings, error) {
 	for _, v := range m.AllRepos {
 		repoItems = append(repoItems, v)
 	}
-	m.RepoList = list.New(repoItems, selectableDelegate{}, 0, 4)
+	m.RepoList = list.New(repoItems, selectableDelegate{IsActiveList: false}, 0, 4)
 
 	authItems := []list.Item{}
 	for _, v := range m.AllAuthors {
 		authItems = append(authItems, v)
 	}
-	m.AuthorList = list.New(authItems, selectableDelegate{}, 0, 4)
+	m.AuthorList = list.New(authItems, selectableDelegate{IsActiveList: true}, 0, 4)
 	return m, nil
 }
