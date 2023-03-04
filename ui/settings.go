@@ -53,6 +53,15 @@ var settingsKey = key.NewBinding(
 )
 
 func (m Settings) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	if msg, ok := msg.(tea.KeyMsg); ok {
+		if msg.String() == "tab" {
+			if m.cursor == authors {
+				m.cursor = repos
+			} else {
+				m.cursor = authors
+			}
+		}
+	}
 	if msg, ok := msg.(tea.WindowSizeMsg); ok {
 		m.AuthorList.SetHeight(msg.Height - 8)
 		m.RepoList.SetHeight(msg.Height - 8)
