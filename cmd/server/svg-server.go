@@ -28,7 +28,7 @@ func main() {
 		shouldHighlight := highlight != ""
 
 		w.Header().Add("Content-Type", "text/html")
-		repoPaths, err := commits.GetMRRepos()
+		repoPaths, err := commits.GetRepos()
 		if err != nil {
 			panic(err)
 		}
@@ -47,7 +47,7 @@ func main() {
 		if err == nil {
 			year = y
 		}
-		repoPaths, err := commits.GetMRRepos()
+		repoPaths, err := commits.GetRepos()
 		if err != nil {
 			panic(err)
 		}
@@ -72,7 +72,7 @@ func main() {
 			}
 			year = y
 		}
-		repoPaths, err := commits.GetMRRepos()
+		repoPaths, err := commits.GetRepos()
 		if err != nil {
 			panic(err)
 		}

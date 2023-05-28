@@ -17,7 +17,7 @@ func main() {
 	aName, _ := commits.GetAuthorName()
 	aEmail, _ := commits.GetAuthorEmail()
 	authors := []string{aName, aEmail}
-	mr, err := commits.GetMRRepos()
+	mr, err := commits.GetRepos()
 	if err != nil {
 		panic(err)
 	}

@@ -36,12 +36,17 @@ func OpenRepo(directory string) (Repo, error) {
 	return Repo{Repo: *r, Path: directory}, err
 }
 
-func GetMRRepos() (RepoSet, error) {
-	mrconf, err := parse.LoadMRConfig()
+func GetRepos() (RepoSet, error) {
+	mgconf, err := parse.LoadMGConfig()
 	if err != nil {
-		return RepoSet{}, err
+		mrconf, err := parse.LoadMRConfig()
+		if err != nil {
+			return RepoSet{}, err
+		}
+		paths := mrconf.GetRepoPaths()
+		return RepoSet(paths), nil
 	}
-	paths := mrconf.GetRepoPaths()
+	paths := mgconf.GetRepoPaths()
 	return RepoSet(paths), nil
 }
 

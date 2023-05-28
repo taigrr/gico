@@ -102,7 +102,7 @@ func NewCommitLog() (CommitLog, error) {
 	if err != nil {
 		return m, err
 	}
-	mr, err := commits.GetMRRepos()
+	mr, err := commits.GetRepos()
 	if err != nil {
 		return m, err
 	}

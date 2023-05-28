@@ -157,7 +157,7 @@ func NewSettings() (Settings, error) {
 	var m Settings
 	var err error
 	m.cursor = authors
-	allRepos, err := commits.GetMRRepos()
+	allRepos, err := commits.GetRepos()
 	if err != nil {
 		return m, err
 	}
