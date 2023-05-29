@@ -3,9 +3,9 @@ A collection of tools for local processing of *Gi*t *Co*mmits
 
 Included Tools:
 - gico
+- gico-server
 - gitfetch
 - mgfetch
-- svg-server
 
 ## GiCo Core library
 
@@ -42,25 +42,38 @@ pallette (see [simplecolorpalettes](https://github.com/taigrr/simplecolorpalette
 A searchable settings view is available to allow users to select and deselect
 individual repos and authors to include in the graph.
 
+#### Installation:
+`go install github.com/taigrr/gico/cmd/gico@latest`
+
 Example GIF:
 
-
-### gitfetch
-
-Like your standard fetch program, gitfetch uses the GiCo library to parse the
-git history of a repo in the current directory and print a gitgraph out to the
-terminal.
-
-### mgfetch
-
-mgfetch uses [mg](https://github.com/taigrr/mg) to pull in a list of all git repos and
-combines the heatmap lists into a single gitgraph, and prints it to the
-terminal.`
-
-### svg-server
+### gico-server
 
 svg-server uses GiCo in a similar way to mgfetch, by first pulling in a list of
 all repos seen by [mg](https://github.com/taigrr/mg) and then generates svg files
 on-the-fly depicting the resultant gitgraph.
 svg-server is suitable for embedding an svg of your gitgraph onto your desktop
 using conky, for example.
+
+
+#### Installation:
+`go install github.com/taigrr/gico/cmd/gico-server@latest`
+### gitfetch
+
+Like your standard fetch program, gitfetch uses the GiCo library to parse the
+git history of a repo in the current directory and print a gitgraph out to the
+terminal.
+
+
+#### Installation:
+`go install github.com/taigrr/gico/cmd/gitfetch@latest`
+### mgfetch
+
+mgfetch uses [mg](https://github.com/taigrr/mg) to pull in a list of all git repos and
+combines the heatmap lists into a single gitgraph, and prints it to the
+terminal.`
+
+
+#### Installation:
+`go install github.com/taigrr/gico/cmd/mgfetch@latest`
+
