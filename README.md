@@ -32,12 +32,12 @@ The gico binary is a tui tool that loads a list of git repos on a system
 and turns it into an interactive Github-style heatmap (coloring support
 included).
 
-By default, gico uses [mg](github.com/taigrr/mg) to pull in a central list of
+By default, gico uses [mg](https://github.com/taigrr/mg) to pull in a central list of
 repos and parses the user's git config to extract the email and name of the
 current user.
 The GiCo library is used to load all the repos and translate them into a heatmap
 and convert the values into a dynamically scaled, user-configurable color
-pallette (see [simplecolorpalettes](github.com/taigrr/simplecolorpalettes)).
+pallette (see [simplecolorpalettes](https://github.com/taigrr/simplecolorpalettes)).
 
 A searchable settings view is available to allow users to select and deselect
 individual repos and authors to include in the graph.
@@ -53,14 +53,14 @@ terminal.
 
 ### mgfetch
 
-mgfetch uses [mg](github.com/taigrr/mg) to pull in a list of all git repos and
+mgfetch uses [mg](https://github.com/taigrr/mg) to pull in a list of all git repos and
 combines the heatmap lists into a single gitgraph, and prints it to the
 terminal.`
 
 ### svg-server
 
 svg-server uses GiCo in a similar way to mgfetch, by first pulling in a list of
-all repos seen by [mg](github.com/taigrr/mg) and then generates svg files
+all repos seen by [mg](https://github.com/taigrr/mg) and then generates svg files
 on-the-fly depicting the resultant gitgraph.
 svg-server is suitable for embedding an svg of your gitgraph onto your desktop
 using conky, for example.
