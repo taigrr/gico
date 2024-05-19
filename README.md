@@ -77,3 +77,8 @@ terminal.`
 #### Installation:
 `go install github.com/taigrr/gico/cmd/mgfetch@latest`
 
+
+## Contributing:
+
+Feel free to submit an issue or PR. PRs which are well-formatted are more likely to be accepted!
+
