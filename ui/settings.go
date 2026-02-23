@@ -22,7 +22,6 @@ type (
 		AllRepos         selectablelist
 		SelectedRepos    []string
 		cursor           SettingsCursor
-		highlightedEntry int
 		AuthorList       list.Model
 		RepoList         list.Model
 	}

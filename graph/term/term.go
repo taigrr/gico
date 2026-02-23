@@ -3,17 +3,11 @@ package term
 import (
 	"os"
 	"strings"
-	"sync"
 
 	"github.com/muesli/termenv"
 	sc "github.com/taigrr/simplecolorpalettes/simplecolor"
 
 	"github.com/taigrr/gico/graph/common"
-)
-
-var (
-	colorsLoaded sync.Once
-	colorScheme  []sc.SimpleColor
 )
 
 func GetWeekUnicode(frequencies []int) string {
