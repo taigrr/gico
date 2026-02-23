@@ -3,7 +3,6 @@ package ui
 import (
 	"io"
 
-	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -49,15 +48,4 @@ func (s selectableDelegate) Render(w io.Writer, m list.Model, index int, item li
 	w.Write([]byte(str))
 }
 
-type delegateKeyMap struct {
-	toggle key.Binding
-}
-
-func newDelegateKeyMap() *delegateKeyMap {
-	return &delegateKeyMap{
-		toggle: key.NewBinding(
-			key.WithKeys(" "),
-			key.WithHelp("space", "choose"),
-		),
-	}
-}
+// delegateKeyMap and newDelegateKeyMap removed (unused)
