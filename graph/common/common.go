@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	colorScheme  []sc.SimpleColor
+	colorScheme []sc.SimpleColor
 )
 
 func CreateGraph() bytes.Buffer {

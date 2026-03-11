@@ -17,13 +17,13 @@ const (
 type (
 	SettingsCursor int
 	Settings       struct {
-		AllAuthors       selectablelist
-		SelectedAuthors  []string
-		AllRepos         selectablelist
-		SelectedRepos    []string
-		cursor           SettingsCursor
-		AuthorList       list.Model
-		RepoList         list.Model
+		AllAuthors      selectablelist
+		SelectedAuthors []string
+		AllRepos        selectablelist
+		SelectedRepos   []string
+		cursor          SettingsCursor
+		AuthorList      list.Model
+		RepoList        list.Model
 	}
 )
 
