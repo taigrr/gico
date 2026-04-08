@@ -54,10 +54,7 @@ func (paths RepoSet) GetRepoAuthors() ([]string, error) {
 }
 
 func (paths RepoSet) GetRepoCommits(year int, authors []string) ([][]types.Commit, error) {
-	yearLength := 365
-	if year%4 == 0 {
-		yearLength++
-	}
+	yearLength := types.YearLength(year)
 
 	commits := make([][]types.Commit, yearLength)
 	for i := 0; i < yearLength; i++ {
@@ -109,10 +106,6 @@ func (paths RepoSet) GetRepoCommits(year int, authors []string) ([][]types.Commi
 }
 
 func (paths RepoSet) FrequencyChan(year int, authors []string) (types.Freq, error) {
-	yearLength := 365
-	if year%4 == 0 {
-		yearLength++
-	}
 	cache, ok := GetCachedGraph(year, authors, paths)
 	if ok {
 		return cache, nil
@@ -152,10 +145,7 @@ func (paths RepoSet) FrequencyChan(year int, authors []string) (types.Freq, erro
 }
 
 func YearFreqFromChan(cc chan types.Commit, year int) types.Freq {
-	yearLength := 365
-	if year%4 == 0 {
-		yearLength++
-	}
+	yearLength := types.YearLength(year)
 	freq := make([]int, yearLength)
 	for commit := range cc {
 		freq[commit.TimeStamp.YearDay()-1]++
@@ -206,10 +196,7 @@ func (repo Repo) GetCommitChan() (chan types.Commit, error) {
 }
 
 func FreqFromChan(cc chan types.Commit, year int) types.Freq {
-	yearLength := 365
-	if year%4 == 0 {
-		yearLength++
-	}
+	yearLength := types.YearLength(year)
 	freq := make([]int, yearLength)
 	for commit := range cc {
 		if commit.TimeStamp.Year() != year {

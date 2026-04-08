@@ -26,10 +26,7 @@ func (paths RepoSet) GetWeekFreq(authors []string) (types.Freq, error) {
 			return types.Freq{}, err
 		}
 		freq = append(curFreq, freq...)
-		today += 365
-		if curYear%4 == 0 {
-			today++
-		}
+		today += types.YearLength(curYear)
 	}
 
 	week := freq[today-6 : today+1]
@@ -37,10 +34,7 @@ func (paths RepoSet) GetWeekFreq(authors []string) (types.Freq, error) {
 }
 
 func (paths RepoSet) Frequency(year int, authors []string) (types.Freq, error) {
-	yearLength := 365
-	if year%4 == 0 {
-		yearLength++
-	}
+	yearLength := types.YearLength(year)
 	gfreq := make(types.Freq, yearLength)
 	for _, p := range paths {
 		repo, err := OpenRepo(p)
@@ -115,11 +109,7 @@ func (repo Repo) GetCommitSet() (CommitSet, error) {
 }
 
 func (cs CommitSet) ToYearFreq() types.Freq {
-	year := cs.Year
-	yearLength := 365
-	if year%4 == 0 {
-		yearLength++
-	}
+	yearLength := types.YearLength(cs.Year)
 	freq := make([]int, yearLength)
 	for _, v := range cs.Commits {
 		freq[v.TimeStamp.YearDay()-1]++

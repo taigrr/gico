@@ -5,6 +5,8 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+
+	"github.com/taigrr/gico/types"
 )
 
 const (
@@ -66,12 +68,10 @@ func (m model) Init() tea.Cmd {
 	return nil
 }
 
+// YearLen returns the number of days in a year.
+// Deprecated: Use types.YearLength instead.
 func YearLen(year int) int {
-	yearLen := 365
-	if year%4 == 0 {
-		yearLen++
-	}
-	return yearLen
+	return types.YearLength(year)
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
