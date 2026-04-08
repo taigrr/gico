@@ -48,6 +48,19 @@ type (
 	}
 )
 
+// IsLeapYear returns true if year is a leap year per the Gregorian calendar.
+func IsLeapYear(year int) bool {
+	return year%4 == 0 && (year%100 != 0 || year%400 == 0)
+}
+
+// YearLength returns 366 for leap years and 365 otherwise.
+func YearLength(year int) int {
+	if IsLeapYear(year) {
+		return 366
+	}
+	return 365
+}
+
 func (c Commit) String() string {
 	return fmt.Sprintf("%s\t%s\t%s\t%s",
 		c.TimeStamp.Format("0"+time.Kitchen),

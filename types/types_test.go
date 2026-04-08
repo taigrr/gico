@@ -122,6 +122,45 @@ func TestFreqMerge(t *testing.T) {
 	}
 }
 
+func TestIsLeapYear(t *testing.T) {
+	tests := []struct {
+		year int
+		want bool
+	}{
+		{2024, true},   // divisible by 4
+		{2025, false},  // not divisible by 4
+		{1900, false},  // divisible by 100 but not 400
+		{2000, true},   // divisible by 400
+		{2100, false},  // divisible by 100 but not 400
+		{2400, true},   // divisible by 400
+		{1996, true},   // divisible by 4
+		{2023, false},  // not divisible by 4
+	}
+	for _, tt := range tests {
+		t.Run(time.Date(tt.year, 1, 1, 0, 0, 0, 0, time.UTC).Format("2006"), func(t *testing.T) {
+			got := IsLeapYear(tt.year)
+			if got != tt.want {
+				t.Errorf("IsLeapYear(%d) = %v, want %v", tt.year, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestYearLength(t *testing.T) {
+	if YearLength(2024) != 366 {
+		t.Error("expected 366 for 2024")
+	}
+	if YearLength(2025) != 365 {
+		t.Error("expected 365 for 2025")
+	}
+	if YearLength(1900) != 365 {
+		t.Error("expected 365 for 1900 (century year, not leap)")
+	}
+	if YearLength(2000) != 366 {
+		t.Error("expected 366 for 2000 (divisible by 400)")
+	}
+}
+
 func TestDataSetOperations(t *testing.T) {
 	ds := NewDataSet()
 	now := time.Now().Truncate(24 * time.Hour)

@@ -8,10 +8,10 @@ import (
 
 func TestMinMax(t *testing.T) {
 	tests := []struct {
-		name       string
-		input      []int
-		wantMin    int
-		wantMax    int
+		name    string
+		input   []int
+		wantMin int
+		wantMax int
 	}{
 		{
 			name:    "normal values",
