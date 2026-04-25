@@ -11,6 +11,13 @@ import (
 	"github.com/taigrr/gico/graph/svg"
 )
 
+func parseYear(value string, fallback int) int {
+	if year, err := strconv.Atoi(value); err == nil {
+		return year
+	}
+	return fallback
+}
+
 func main() {
 	mux := http.NewServeMux()
 
@@ -37,12 +44,9 @@ func main() {
 	})
 
 	mux.HandleFunc("GET /stats.json", func(w http.ResponseWriter, r *http.Request) {
-		year := time.Now().Year()
-		yst := r.URL.Query().Get("year")
+		year := parseYear(r.URL.Query().Get("year"), time.Now().Year())
 		author := r.URL.Query().Get("author")
-		if y, err := strconv.Atoi(yst); err == nil {
-			year = y
-		}
+
 		repoPaths, err := commits.GetRepos()
 		if err != nil {
 			http.Error(w, "failed to get repos", http.StatusInternalServerError)
@@ -62,17 +66,12 @@ func main() {
 	})
 
 	mux.HandleFunc("GET /yearly.svg", func(w http.ResponseWriter, r *http.Request) {
-		year := time.Now().Year()
-		yst := r.URL.Query().Get("year")
+		currentYear := time.Now().Year()
+		year := parseYear(r.URL.Query().Get("year"), currentYear)
 		author := r.URL.Query().Get("author")
 		highlight := r.URL.Query().Get("highlight")
-		shouldHighlight := highlight != ""
-		if y, err := strconv.Atoi(yst); err == nil {
-			if year != y {
-				shouldHighlight = false
-			}
-			year = y
-		}
+		shouldHighlight := highlight != "" && year == currentYear
+
 		repoPaths, err := commits.GetRepos()
 		if err != nil {
 			http.Error(w, "failed to get repos", http.StatusInternalServerError)
