@@ -33,7 +33,10 @@ func OpenRepo(directory string) (Repo, error) {
 		}
 	}
 	r, err := git.PlainOpenWithOptions(directory, &(git.PlainOpenOptions{DetectDotGit: true}))
-	return Repo{Repo: *r, Path: directory}, err
+	if err != nil {
+		return Repo{}, err
+	}
+	return Repo{Repo: *r, Path: directory}, nil
 }
 
 func GetRepos() (RepoSet, error) {

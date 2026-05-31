@@ -210,3 +210,14 @@ func TestOpenRepoNonDirectory(t *testing.T) {
 		t.Error("expected error for non-directory path")
 	}
 }
+
+func TestOpenRepoNonGitDirectory(t *testing.T) {
+	dir := t.TempDir()
+	_, err := OpenRepo(dir)
+	if err == nil {
+		t.Fatal("expected error for non-git directory")
+	}
+	if err.Error() == "" {
+		t.Fatal("expected a descriptive git error")
+	}
+}
