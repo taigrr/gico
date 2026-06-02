@@ -8,6 +8,11 @@ import (
 	"github.com/taigrr/gico/commits"
 )
 
+func shiftSelectionByWeeks(year, selected, weeks int) (int, int) {
+	targetDate := time.Date(year, time.January, 1, 0, 0, 0, 0, time.Local).AddDate(0, 0, selected+(weeks*7))
+	return targetDate.Year(), targetDate.YearDay() - 1
+}
+
 type (
 	Graph struct {
 		Selected int
@@ -18,8 +23,7 @@ type (
 )
 
 func (m Graph) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	yearLen := YearLen(m.Year)
-	prevYearLen := YearLen(m.Year - 1)
+	currentYear := m.Year
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -32,31 +36,17 @@ func (m Graph) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.Selected--
 			}
 		case "left":
-			if m.Selected > 6 {
-				m.Selected -= 7
-			} else {
-				// TODO calculate the square for this day last year
-				m.Selected -= 7
-				m.Selected += prevYearLen
-				m.Year--
-				go func() {
-					mr := commits.RepoSet(m.Repos)
-					mr.FrequencyChan(m.Year-1, m.Authors)
-				}()
-			}
+			m.Year, m.Selected = shiftSelectionByWeeks(m.Year, m.Selected, -1)
 		case "right":
-			if m.Selected < yearLen-7 {
-				m.Selected += 7
-			} else {
-				m.Selected += 7
-				m.Selected -= yearLen
-				m.Year++
-				go func() {
-					mr := commits.RepoSet(m.Repos)
-					mr.FrequencyChan(m.Year+1, m.Authors)
-				}()
-			}
+			m.Year, m.Selected = shiftSelectionByWeeks(m.Year, m.Selected, 1)
 		}
+	}
+	if m.Year != currentYear {
+		go func(year int, repos, authors []string) {
+			mr := commits.RepoSet(repos)
+			mr.FrequencyChan(year-1, authors)
+			mr.FrequencyChan(year+1, authors)
+		}(m.Year, m.Repos, m.Authors)
 	}
 	return m, nil
 }
