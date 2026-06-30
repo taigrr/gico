@@ -15,6 +15,19 @@ func TestHashSliceDeterministic(t *testing.T) {
 	}
 }
 
+func TestHashSliceDoesNotMutateInput(t *testing.T) {
+	input := []string{"foo", "bar", "baz"}
+	want := []string{"foo", "bar", "baz"}
+
+	_ = hashSlice(input)
+
+	for i := range want {
+		if input[i] != want[i] {
+			t.Fatalf("hashSlice mutated input at index %d: got %q, want %q", i, input[i], want[i])
+		}
+	}
+}
+
 func TestHashSliceDifferentInputs(t *testing.T) {
 	a := hashSlice([]string{"foo", "bar"})
 	b := hashSlice([]string{"foo", "baz"})

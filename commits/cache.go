@@ -31,9 +31,10 @@ func init() {
 }
 
 func hashSlice(in []string) string {
-	sort.Strings(in)
+	sorted := append([]string(nil), in...)
+	sort.Strings(sorted)
 	sb := strings.Builder{}
-	for _, s := range in {
+	for _, s := range sorted {
 		sb.WriteString(s)
 	}
 	h := md5.New()
