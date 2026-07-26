@@ -117,7 +117,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		var cmd tea.Cmd
 		m.CommitLogModel, cmd = m.CommitLogModel.Update(msg)
 		b = append(b, cmd)
-		fallthrough
+		// Forward non-key messages (e.g. window resize) to the settings model
+		// so its lists stay sized, but do not let key presses reach the
+		// settings toggle logic while the graph is shown.
+		if _, isKey := msg.(tea.KeyPressMsg); !isKey {
+			var scmd tea.Cmd
+			m.SettingsModel, scmd = m.SettingsModel.Update(msg)
+			b = append(b, scmd)
+		}
+		return m, tea.Batch(b...)
 	case settings:
 		var scmd tea.Cmd
 		m.SettingsModel, scmd = m.SettingsModel.Update(msg)
