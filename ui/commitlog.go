@@ -5,9 +5,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/charmbracelet/bubbles/key"
-	"github.com/charmbracelet/bubbles/table"
-	tea "github.com/charmbracelet/bubbletea"
+	"charm.land/bubbles/v2/key"
+	"charm.land/bubbles/v2/table"
+	tea "charm.land/bubbletea/v2"
 
 	"github.com/taigrr/gico/commits"
 	"github.com/taigrr/gico/types"
@@ -24,7 +24,7 @@ type (
 	}
 )
 
-func (m CommitLog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m CommitLog) Update(msg tea.Msg) (CommitLog, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {

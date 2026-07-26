@@ -127,14 +127,14 @@ func TestIsLeapYear(t *testing.T) {
 		year int
 		want bool
 	}{
-		{2024, true},   // divisible by 4
-		{2025, false},  // not divisible by 4
-		{1900, false},  // divisible by 100 but not 400
-		{2000, true},   // divisible by 400
-		{2100, false},  // divisible by 100 but not 400
-		{2400, true},   // divisible by 400
-		{1996, true},   // divisible by 4
-		{2023, false},  // not divisible by 4
+		{2024, true},  // divisible by 4
+		{2025, false}, // not divisible by 4
+		{1900, false}, // divisible by 100 but not 400
+		{2000, true},  // divisible by 400
+		{2100, false}, // divisible by 100 but not 400
+		{2400, true},  // divisible by 400
+		{1996, true},  // divisible by 4
+		{2023, false}, // not divisible by 4
 	}
 	for _, tt := range tests {
 		t.Run(time.Date(tt.year, 1, 1, 0, 0, 0, 0, time.UTC).Format("2006"), func(t *testing.T) {

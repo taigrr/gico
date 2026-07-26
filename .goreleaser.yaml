@@ -1,0 +1,71 @@
+version: 2
+
+project_name: gico
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: gico
+    main: ./cmd/gico
+    binary: gico
+    env: [CGO_ENABLED=0]
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+  - id: gico-server
+    main: ./cmd/gico-server
+    binary: gico-server
+    env: [CGO_ENABLED=0]
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+  - id: gitfetch
+    main: ./cmd/gitfetch
+    binary: gitfetch
+    env: [CGO_ENABLED=0]
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+  - id: mgfetch
+    main: ./cmd/mgfetch
+    binary: mgfetch
+    env: [CGO_ENABLED=0]
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+
+archives:
+  - formats: [tar.gz]
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  use: github
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - Merge pull request
+      - Merge branch
+
+release:
+  draft: false
+  prerelease: auto

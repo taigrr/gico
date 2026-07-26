@@ -3,7 +3,7 @@ package ui
 import (
 	"testing"
 
-	tea "github.com/charmbracelet/bubbletea"
+	tea "charm.land/bubbletea/v2"
 )
 
 func TestShiftSelectionByWeeks(t *testing.T) {
@@ -62,8 +62,8 @@ func TestShiftSelectionByWeeks(t *testing.T) {
 func TestGraphUpdateMovesAcrossYears(t *testing.T) {
 	graph := Graph{Year: 2025, Selected: 3}
 
-	updatedModel, _ := graph.Update(tea.KeyMsg{Type: tea.KeyLeft})
-	updated := updatedModel.(Graph)
+	updatedModel, _ := graph.Update(tea.KeyPressMsg{Code: tea.KeyLeft})
+	updated := updatedModel
 
 	if updated.Year != 2024 {
 		t.Fatalf("expected year 2024 after moving left, got %d", updated.Year)
@@ -76,14 +76,14 @@ func TestGraphUpdateMovesAcrossYears(t *testing.T) {
 func TestGraphUpdateStopsAtColumnBounds(t *testing.T) {
 	graph := Graph{Year: 2025, Selected: 0}
 
-	updatedModel, _ := graph.Update(tea.KeyMsg{Type: tea.KeyUp})
-	updated := updatedModel.(Graph)
+	updatedModel, _ := graph.Update(tea.KeyPressMsg{Code: tea.KeyUp})
+	updated := updatedModel
 	if updated.Selected != 0 {
 		t.Fatalf("expected selection to stay at 0 when moving up, got %d", updated.Selected)
 	}
 
-	updatedModel, _ = graph.Update(tea.KeyMsg{Type: tea.KeyDown})
-	updated = updatedModel.(Graph)
+	updatedModel, _ = graph.Update(tea.KeyPressMsg{Code: tea.KeyDown})
+	updated = updatedModel
 	if updated.Selected != 1 {
 		t.Fatalf("expected selection 1 after moving down, got %d", updated.Selected)
 	}

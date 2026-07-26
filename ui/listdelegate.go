@@ -3,8 +3,8 @@ package ui
 import (
 	"io"
 
-	"github.com/charmbracelet/bubbles/list"
-	tea "github.com/charmbracelet/bubbletea"
+	"charm.land/bubbles/v2/list"
+	tea "charm.land/bubbletea/v2"
 )
 
 type SelectionMsg struct {
@@ -42,7 +42,7 @@ func (s selectableDelegate) Render(w io.Writer, m list.Model, index int, item li
 	}
 	str += x.text
 	if s.IsActiveList && m.Index() == index {
-		sty := list.NewDefaultItemStyles()
+		sty := list.NewDefaultItemStyles(true)
 		str = sty.SelectedTitle.Render(str)
 	}
 	w.Write([]byte(str))

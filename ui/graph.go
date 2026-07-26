@@ -3,7 +3,7 @@ package ui
 import (
 	"time"
 
-	tea "github.com/charmbracelet/bubbletea"
+	tea "charm.land/bubbletea/v2"
 
 	"github.com/taigrr/gico/commits"
 )
@@ -22,7 +22,7 @@ type (
 	}
 )
 
-func (m Graph) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m Graph) Update(msg tea.Msg) (Graph, tea.Cmd) {
 	currentYear := m.Year
 	switch msg := msg.(type) {
 	case tea.KeyMsg:

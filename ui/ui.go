@@ -1,10 +1,10 @@
 package ui
 
 import (
-	"github.com/charmbracelet/bubbles/help"
-	"github.com/charmbracelet/bubbles/key"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/help"
+	"charm.land/bubbles/v2/key"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 
 	"github.com/taigrr/gico/types"
 )
@@ -105,43 +105,42 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		m.CommitLogModel.Authors = m.SettingsModel.SelectedAuthors
 		m.CommitLogModel.Repos = m.SettingsModel.SelectedRepos
-		tmp, c := m.GraphModel.Update(msg)
+		var c tea.Cmd
+		m.GraphModel, c = m.GraphModel.Update(msg)
 		b = append(b, c)
-		m.GraphModel, _ = tmp.(Graph)
 
 		m.CommitLogModel.Year = m.GraphModel.Year
 		if m.CommitLogModel.YearDay != m.GraphModel.Selected {
 			m.CommitLogModel.YearDay = m.GraphModel.Selected
 			m.CommitLogModel.Table.SetCursor(0)
 		}
-		tmpC, cmd := m.CommitLogModel.Update(msg)
+		var cmd tea.Cmd
+		m.CommitLogModel, cmd = m.CommitLogModel.Update(msg)
 		b = append(b, cmd)
-		m.CommitLogModel, _ = tmpC.(CommitLog)
 		fallthrough
 	case settings:
-		tmp, cmd := m.SettingsModel.Update(msg)
-
-		b = append(b, cmd)
-		m.SettingsModel, _ = tmp.(Settings)
+		var scmd tea.Cmd
+		m.SettingsModel, scmd = m.SettingsModel.Update(msg)
+		b = append(b, scmd)
 		return m, tea.Batch(b...)
 
 	}
 	return m, nil
 }
 
-func (m model) View() string {
+func (m model) View() tea.View {
 	if m.err != nil {
-		return m.err.Error()
+		return tea.NewView(m.err.Error())
 	}
 	if m.quitting {
-		return ""
+		return tea.NewView("")
 	}
 	if m.cursor == settings {
-		return m.SettingsModel.View()
+		return tea.NewView(m.SettingsModel.View())
 	}
-	return lipgloss.JoinVertical(lipgloss.Top,
+	return tea.NewView(lipgloss.JoinVertical(lipgloss.Top,
 		m.GraphModel.View(),
 		m.CommitLogModel.View(),
 		m.HelpModel.ShortHelpView(m.Bindings),
-	)
+	))
 }

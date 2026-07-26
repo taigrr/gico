@@ -2,9 +2,11 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -14,5 +16,47 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
-      - run: go vet ./...
-      - run: go build ./...
+          check-latest: true
+
+      - name: Verify go.mod is tidy
+        run: |
+          go mod tidy
+          git diff --exit-code -- go.mod go.sum
+
+      - name: Check formatting (gofmt)
+        run: |
+          fmtout=$(gofmt -l .)
+          if [ -n "$fmtout" ]; then
+            echo "The following files are not gofmt-formatted:"
+            echo "$fmtout"
+            exit 1
+          fi
+
+      - name: Check imports (goimports)
+        run: |
+          go install golang.org/x/tools/cmd/goimports@latest
+          impout=$("$(go env GOPATH)/bin/goimports" -l .)
+          if [ -n "$impout" ]; then
+            echo "The following files are not goimports-formatted:"
+            echo "$impout"
+            exit 1
+          fi
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: staticcheck
+        run: |
+          go install honnef.co/go/tools/cmd/staticcheck@latest
+          "$(go env GOPATH)/bin/staticcheck" ./...
+
+      - name: govulncheck
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          "$(go env GOPATH)/bin/govulncheck" ./...
+
+      - name: Build
+        run: go build ./...
+
+      - name: Test (race)
+        run: go test -race ./...

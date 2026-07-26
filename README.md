@@ -1,4 +1,10 @@
 # GiCo
+
+[![CI](https://github.com/taigrr/gico/actions/workflows/ci.yml/badge.svg)](https://github.com/taigrr/gico/actions/workflows/ci.yml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/taigrr/gico.svg)](https://pkg.go.dev/github.com/taigrr/gico)
+[![Go Report Card](https://goreportcard.com/badge/github.com/taigrr/gico)](https://goreportcard.com/report/github.com/taigrr/gico)
+[![License: 0BSD](https://img.shields.io/badge/License-0BSD-blue.svg)](LICENSE.txt)
+
 A collection of tools for local processing of *Gi*t *Co*mmits
 
 Included Tools:

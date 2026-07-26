@@ -1,10 +1,10 @@
 package ui
 
 import (
-	"github.com/charmbracelet/bubbles/key"
-	"github.com/charmbracelet/bubbles/list"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/key"
+	"charm.land/bubbles/v2/list"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 
 	"github.com/taigrr/gico/commits"
 )
@@ -51,7 +51,7 @@ var settingsKey = key.NewBinding(
 	key.WithHelp("ctrl+g", "press ctrl+g to open settings"),
 )
 
-func (m Settings) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m Settings) Update(msg tea.Msg) (Settings, tea.Cmd) {
 	if msg, ok := msg.(tea.KeyMsg); ok {
 		if msg.String() == "tab" {
 			if m.cursor == authors {
@@ -76,7 +76,7 @@ func (m Settings) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg := msg.(type) {
 		case tea.KeyMsg:
 			switch msg.String() {
-			case " ", "enter":
+			case "space", "enter":
 				selected := 0
 				if !m.AuthorList.IsFiltered() {
 					selected = m.AuthorList.Index()
@@ -110,7 +110,7 @@ func (m Settings) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg := msg.(type) {
 		case tea.KeyMsg:
 			switch msg.String() {
-			case " ", "enter":
+			case "space", "enter":
 				selected := 0
 				if !m.RepoList.IsFiltered() {
 					selected = m.RepoList.Index()
