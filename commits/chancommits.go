@@ -148,6 +148,9 @@ func YearFreqFromChan(cc chan types.Commit, year int) types.Freq {
 	yearLength := types.YearLength(year)
 	freq := make([]int, yearLength)
 	for commit := range cc {
+		if commit.TimeStamp.Year() != year {
+			continue
+		}
 		freq[commit.TimeStamp.YearDay()-1]++
 	}
 	return freq

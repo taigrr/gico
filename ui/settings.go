@@ -52,7 +52,7 @@ var settingsKey = key.NewBinding(
 )
 
 func (m Settings) Update(msg tea.Msg) (Settings, tea.Cmd) {
-	if msg, ok := msg.(tea.KeyMsg); ok {
+	if msg, ok := msg.(tea.KeyPressMsg); ok {
 		if msg.String() == "tab" {
 			if m.cursor == authors {
 				m.cursor = repos
@@ -74,7 +74,7 @@ func (m Settings) Update(msg tea.Msg) (Settings, tea.Cmd) {
 		var cmd tea.Cmd
 		batch := []tea.Cmd{}
 		switch msg := msg.(type) {
-		case tea.KeyMsg:
+		case tea.KeyPressMsg:
 			switch msg.String() {
 			case "space", "enter":
 				selected := 0
@@ -108,7 +108,7 @@ func (m Settings) Update(msg tea.Msg) (Settings, tea.Cmd) {
 		var cmd tea.Cmd
 		batch := []tea.Cmd{}
 		switch msg := msg.(type) {
-		case tea.KeyMsg:
+		case tea.KeyPressMsg:
 			switch msg.String() {
 			case "space", "enter":
 				selected := 0

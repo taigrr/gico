@@ -77,7 +77,7 @@ func YearLen(year int) int {
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch cmd := msg.(type) {
 
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		if key.Matches(cmd, settingsKey) {
 			switch m.cursor {
 			case settings:

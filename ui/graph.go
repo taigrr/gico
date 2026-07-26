@@ -6,6 +6,7 @@ import (
 	tea "charm.land/bubbletea/v2"
 
 	"github.com/taigrr/gico/commits"
+	"github.com/taigrr/gico/types"
 )
 
 func shiftSelectionByWeeks(year, selected, weeks int) (int, int) {
@@ -25,10 +26,10 @@ type (
 func (m Graph) Update(msg tea.Msg) (Graph, tea.Cmd) {
 	currentYear := m.Year
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "down":
-			if m.Selected%7 != 6 {
+			if m.Selected%7 != 6 && m.Selected+1 < types.YearLength(m.Year) {
 				m.Selected++
 			}
 		case "up":

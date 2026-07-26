@@ -26,7 +26,7 @@ type (
 
 func (m CommitLog) Update(msg tea.Msg) (CommitLog, tea.Cmd) {
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "j", "k", "b", "n", "pgdown", "pgup":
 		default:
