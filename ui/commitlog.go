@@ -24,6 +24,25 @@ type (
 	}
 )
 
+func commitRowsForDay(commits [][]types.Commit, yearDay int) []table.Row {
+	if yearDay < 0 || yearDay >= len(commits) {
+		return nil
+	}
+
+	rows := []table.Row{}
+	for _, c := range commits[yearDay] {
+		repo := filepath.Base(c.Repo)
+		r := table.Row{
+			c.TimeStamp.Format("0" + time.Kitchen),
+			repo,
+			c.Author.Name,
+			c.Message,
+		}
+		rows = append(rows, r)
+	}
+	return rows
+}
+
 func (m CommitLog) Update(msg tea.Msg) (CommitLog, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
@@ -33,19 +52,7 @@ func (m CommitLog) Update(msg tea.Msg) (CommitLog, tea.Cmd) {
 			mr := commits.RepoSet(m.Repos)
 			cis, _ := mr.GetRepoCommits(m.Year, m.Authors)
 			m.Commits = cis
-			commits := m.Commits[m.YearDay]
-			rows := []table.Row{}
-			for _, c := range commits {
-				repo := filepath.Base(c.Repo)
-				r := table.Row{
-					c.TimeStamp.Format("0" + time.Kitchen),
-					repo,
-					c.Author.Name,
-					c.Message,
-				}
-				rows = append(rows, r)
-			}
-			m.Table.SetRows(rows)
+			m.Table.SetRows(commitRowsForDay(m.Commits, m.YearDay))
 			m.Table.SetCursor(0)
 		}
 	}
@@ -76,6 +83,10 @@ func (m CommitLog) Init() tea.Cmd {
 
 func (m CommitLog) View() string {
 	if len(m.Commits) == 0 {
+		return "No commits to display"
+	}
+
+	if m.YearDay < 0 || m.YearDay >= len(m.Commits) {
 		return "No commits to display"
 	}
 
@@ -111,27 +122,11 @@ func NewCommitLog() (CommitLog, error) {
 	m.Year = year
 	m.YearDay = today
 	m.Table = newTable()
-	{
-		cis, _ := mr.GetRepoCommits(m.Year, m.Authors)
-		m.Commits = cis
-		commits := m.Commits[m.YearDay]
-		rows := []table.Row{}
-		for _, c := range commits {
-			repo := filepath.Base(c.Repo)
-			r := table.Row{
-				c.TimeStamp.Format("0" + time.Kitchen),
-				repo,
-				c.Author.Name,
-				c.Message,
-			}
-			rows = append(rows, r)
-		}
-		m.Table.SetRows(rows)
-	}
 	m.Commits, err = mr.GetRepoCommits(m.Year, m.Authors)
 	if err != nil {
 		return m, err
 	}
+	m.Table.SetRows(commitRowsForDay(m.Commits, m.YearDay))
 	m.Table.SetCursor(0)
 	return m, err
 }
