@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/taigrr/gico/cmd/internal/cli"
 	"github.com/taigrr/gico/commits"
 	gterm "github.com/taigrr/gico/graph/term"
 )
@@ -13,16 +14,15 @@ func main() {
 	year := time.Now().Year()
 	dir, err := os.Getwd()
 	if err != nil {
-		panic(err)
+		cli.Fatal("failed to get current directory", err)
 	}
 	r, err := commits.OpenRepo(dir)
 	if err != nil {
-		fmt.Println("Error opening current directory as a git repo")
-		os.Exit(1)
+		cli.Fatal("failed to open current directory as a git repo", err)
 	}
 	cs, err := r.GetCommitSet()
 	if err != nil {
-		panic(err)
+		cli.Fatal("failed to read commits", err)
 	}
 	cs = cs.FilterByYear(year)
 	freq := cs.ToYearFreq()
