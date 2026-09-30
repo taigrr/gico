@@ -118,6 +118,10 @@ func (cs CommitSet) ToYearFreq() types.Freq {
 }
 
 func (cs CommitSet) FilterByAuthorRegex(authors []string) (CommitSet, error) {
+	if len(authors) == 0 {
+		return CommitSet{Year: cs.Year, Commits: append([]types.Commit(nil), cs.Commits...)}, nil
+	}
+
 	regSet := [](*regexp.Regexp){}
 	for _, a := range authors {
 		r, err := regexp.Compile(a)
