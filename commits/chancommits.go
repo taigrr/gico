@@ -225,6 +225,16 @@ func FilterCChanByYear(in chan types.Commit, year int) chan types.Commit {
 
 func FilterCChanByAuthor(in chan types.Commit, authors []string) (chan types.Commit, error) {
 	out := make(chan types.Commit, 30)
+	if len(authors) == 0 {
+		go func() {
+			for commit := range in {
+				out <- commit
+			}
+			close(out)
+		}()
+		return out, nil
+	}
+
 	regSet := [](*regexp.Regexp){}
 	for _, a := range authors {
 		r, err := regexp.Compile(a)

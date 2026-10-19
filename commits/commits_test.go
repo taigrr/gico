@@ -88,6 +88,27 @@ func TestCommitSetFilterByAuthorRegex(t *testing.T) {
 	}
 }
 
+func TestCommitSetFilterByAuthorRegexEmptyMatchesAll(t *testing.T) {
+	cs := CommitSet{
+		Year: 2025,
+		Commits: []types.Commit{
+			makeCommit("Alice", "alice@example.com", time.Now()),
+			makeCommit("Bob", "bob@example.com", time.Now()),
+		},
+	}
+
+	filtered, err := cs.FilterByAuthorRegex(nil)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if filtered.Year != cs.Year {
+		t.Fatalf("expected year %d, got %d", cs.Year, filtered.Year)
+	}
+	if len(filtered.Commits) != len(cs.Commits) {
+		t.Fatalf("expected %d commits, got %d", len(cs.Commits), len(filtered.Commits))
+	}
+}
+
 func TestCommitSetToYearFreq(t *testing.T) {
 	// Regular year (2025)
 	cs := CommitSet{
@@ -193,6 +214,26 @@ func TestFilterCChanByAuthor(t *testing.T) {
 	}
 	if count != 2 {
 		t.Errorf("expected 2 commits, got %d", count)
+	}
+}
+
+func TestFilterCChanByAuthorEmptyMatchesAll(t *testing.T) {
+	in := make(chan types.Commit, 3)
+	in <- makeCommit("Alice", "alice@x.com", time.Now())
+	in <- makeCommit("Bob", "bob@x.com", time.Now())
+	in <- makeCommit("Charlie", "charlie@x.com", time.Now())
+	close(in)
+
+	out, err := FilterCChanByAuthor(in, nil)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	count := 0
+	for range out {
+		count++
+	}
+	if count != 3 {
+		t.Errorf("expected 3 commits, got %d", count)
 	}
 }
 
