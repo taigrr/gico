@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -35,6 +36,9 @@ func hashSlice(in []string) string {
 	sort.Strings(sorted)
 	sb := strings.Builder{}
 	for _, s := range sorted {
+		// Length-prefix each element so different list boundaries cannot collide.
+		sb.WriteString(strconv.Itoa(len(s)))
+		sb.WriteByte(':')
 		sb.WriteString(s)
 	}
 	h := md5.New()

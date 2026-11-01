@@ -110,3 +110,36 @@ func TestCacheReposAuthorsRoundTrip(t *testing.T) {
 		t.Errorf("expected 2 authors, got %d", len(cached))
 	}
 }
+
+func TestHashSlicePreservesElementBoundaries(t *testing.T) {
+	cases := []struct {
+		name        string
+		left, right []string
+	}{
+		{"split", []string{"a", "bc"}, []string{"ab", "c"}},
+		{"empty element", nil, []string{""}},
+		{"embedded separator", []string{"a\x00b"}, []string{"a", "b"}},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if hashSlice(tc.left) == hashSlice(tc.right) {
+				t.Fatal("distinct lists share a cache key")
+			}
+		})
+	}
+}
+
+func TestCacheGraphSeparatesAuthorLists(t *testing.T) {
+	paths := []string{"/repo/boundary-regression"}
+	CacheGraph(2026, []string{"a", "bc"}, paths, types.Freq{7})
+	if _, ok := GetCachedGraph(2026, []string{"ab", "c"}, paths); ok {
+		t.Fatal("different author list retrieved cached graph")
+	}
+}
+
+func TestCacheReposAuthorsSeparatesPathLists(t *testing.T) {
+	CacheReposAuthors([]string{"/boundary/a", "bc"}, []string{"alice"})
+	if _, ok := GetCachedReposAuthors([]string{"/boundary/ab", "c"}); ok {
+		t.Fatal("different repository list retrieved cached authors")
+	}
+}
