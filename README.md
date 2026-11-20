@@ -31,6 +31,10 @@ It is up to more concrete implementations to decide how this data is visualized
 or otherwise exposed to an end-user.
 For this reason, several example tools have been provided.
 
+## Requirements
+
+Go 1.27.4 or newer is required.
+
 ## Executables
 ### gico
 
